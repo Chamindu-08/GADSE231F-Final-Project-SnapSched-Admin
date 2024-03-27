@@ -1,11 +1,15 @@
 <?php
-if(isset($_POST["date"])) {
-    //accept HTML Form data
+if(isset($_POST["date"], $_POST["announcement"])) {
+    //get the form data
     $Date = $_POST["date"];
     $Announcement = $_POST["announcement"];
 
+    // Check if teacher is set, if not, set it to empty string
+    $Student = isset($_POST["student"]) ? $_POST["student"] : "";
+    $Teacher = isset($_POST["teacher"]) ? $_POST["teacher"] : ""; 
+
     //validate fields
-    if (empty($Date) || empty($Announcement)) {
+    if (empty($Date) || empty($Announcement) || (empty($Student) && empty($Teacher))) {
         echo "<script>alert('All fields are required.');</script>";
     } else {
         //include database connection
@@ -16,22 +20,34 @@ if(isset($_POST["date"])) {
             echo "Database connection failed. Please try again later.";
         }
 
+        //determine the recipient
+        if (!empty($Student) && !empty($Teacher)) {
+            $Recipient = 'both';
+        } elseif (!empty($Student)) {
+            $Recipient = 'student';
+        } elseif (!empty($Teacher)) {
+            $Recipient = 'teacher';
+        } else {
+            echo "<script>alert('Please select the recipient.');</script>";
+            exit();
+        }
+
         //get the latest AbsentId from the database to determine the next ID
         $SQLAnnouncement = "SELECT * FROM announcement";
         $result = mysqli_query($connection, $SQLAnnouncement);
 
         if ($row = mysqli_fetch_assoc($result)) {
-            $lastAbsentId = $row['AnnouncementId'];
-            $lastNumber = intval(substr($lastAbsentId, 1));
+            $lastAnnouncementId = $row['AnnouncementId'];
+            $lastNumber = intval(substr($lastAnnouncementId, 1));
             $nextNumber = $lastNumber + 1;
-            $nextAbsentId = 'A' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+            $nextAnnouncementId = 'A' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
         } else {
             //default value for the first record
             $nextAnnouncementId = 'A001';
         }
 
         //insert data into the database
-        $sql = "INSERT INTO announcement (AnnouncementId, Announcement, AnnouncementDate) VALUES ('$nextAnnouncementId', '$Announcement', '$Date')";
+        $sql = "INSERT INTO announcement (AnnouncementId, Announcement,Recipient, AnnouncementDate) VALUES ('$nextAnnouncementId', '$Announcement','$Recipient', '$Date')";
 
         //execute the query
         $result = mysqli_query($connection, $sql);
@@ -47,6 +63,7 @@ if(isset($_POST["date"])) {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -91,6 +108,11 @@ if(isset($_POST["date"])) {
                                             <textarea class="form-control" rows="10" name="announcement"></textarea>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="student" value="student">Student
+                                            <input type="checkbox" name="teacher" value="teacher">Teacher
+                                        </td>
                                     <tr>
                                         <td colspan="2"><button type="submit" class="btnStyle1 mx-2">submit</button></td>
                                     </tr>
