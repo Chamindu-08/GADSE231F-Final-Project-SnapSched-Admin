@@ -3,7 +3,7 @@
             <!-- content for sidebar -->
             <div class="h-100">
                 <div class="sidebar-logo">
-                    <a href="#">Sujatha Vidyalaya</a>
+                    <a href="#">Sri Indasara Maha Vidyalaya</a>
                     <img src="Images/flags.png" alt="">
                 </div>
                 <ul class="sidebar-nav">
@@ -20,16 +20,16 @@
                         </a>
                         <ul id="posts" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                             <li class="sidebar-item">
-                                <a href="TeacherMarkInsert.php" class="sidebar-link">Student Profile</a>
+                                <a href="StudentProfile.php" class="sidebar-link">Student Profile</a>
                             </li>
                             <li class="sidebar-item">
-                                <a href="TeacherMarksUpdate.php" class="sidebar-link">Students Progress Report</a>
+                                <a href="StudentProgressReport.php" class="sidebar-link">Students Progress Report</a>
                             </li>
                             <li class="sidebar-item">
-                                <a href="TeacherMarkInsert.php" class="sidebar-link">Student Time Table</a>
+                                <a href="StudentTimeTable.php" class="sidebar-link">Student Time Table</a>
                             </li>
                             <li class="sidebar-item">
-                                <a href="TeacherMarkInsert.php" class="sidebar-link">Student Register</a>
+                                <a href="StudentRegister.php" class="sidebar-link">Student Register</a>
                             </li>
                         </ul>
                     </li>
@@ -40,30 +40,30 @@
                         </a>
                         <ul id="posts" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                             <li class="sidebar-item">
-                                <a href="TeacherMarkInsert.php" class="sidebar-link">Teacher Profile</a>
+                                <a href="TeacherProfile.php" class="sidebar-link">Teacher Profile</a>
                             </li>
                             <li class="sidebar-item">
-                                <a href="TeacherMarkInsert.php" class="sidebar-link">Teacher Time Table</a>
+                                <a href="TeacherTimeTable.php" class="sidebar-link">Teacher Time Table</a>
                             </li>
                             <li class="sidebar-item">
-                                <a href="TeacherMarkInsert.php" class="sidebar-link">Teacher Register</a>
+                                <a href="TeacherRegister.php" class="sidebar-link">Teacher Register</a>
                             </li>
                         </ul>
                     </li>
                     <li class="sidebar-item">
-                        <a href="TeacherViewSProgrssReport.php" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">
+                        <a href="YearTimeTable.php" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">
                             <img src="Images/table-calendar.png" style="width:15px;">
                             Year Time Table
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a href="TeacherAbsentism.php" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">
+                        <a href="Absentism.php" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">
                             <img src="Images/absentism.png" style="width:15px;">
                             Absentism
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a href="TeacherAbsentism.php" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">
+                        <a href="Announcement.php" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">
                             <img src="Images/absentism.png" style="width:15px;">
                             Announcements
                         </a>
@@ -75,18 +75,18 @@
                         </a>
                         <ul id="posts" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                             <li class="sidebar-item">
-                                <a href="TeacherProfileView.php" class="sidebar-link">View Profile</a>
+                                <a href="AdminProfile.php" class="sidebar-link">View Profile</a>
                             </li>
                             <li class="sidebar-item">
-                                <a href="TeacherProfileUpdate.php" class="sidebar-link">Update Profile</a>
+                                <a href="AdminProfileEdit.php" class="sidebar-link">Update Profile</a>
                             </li>
                             <li class="sidebar-item">
-                                <a href="TeacherChangePassword.php" class="sidebar-link">Change Password</a>
+                                <a href="AdminPasswordChange.php" class="sidebar-link">Change Password</a>
                             </li>
                         </ul>
                     </li>
                     <li class="sidebar-item">
-                        <a href="TeacherLogout.php" class="sidebar-link" data-bs-target="#multi" aria-expanded="false">
+                        <a href="AdminLogout.php" class="sidebar-link" data-bs-target="#multi" aria-expanded="false">
                             <img src="Images/logout.png" style="width:15px;">
                             Logout
                         </a>
@@ -119,9 +119,9 @@
                             <img src="images/user-icon.png" class="avatar" alt="">
                         </a>
                         <div class="dropdown-menu dropdown-menu-end">
-                            <a href="TeacherProfileView.php" class="dropdown-item"><img src="Images/user2.png" style="width:15px;">Profile</a>
-                            <a href="TeacherProfileUpdate.php" class="dropdown-item"><img src="Images/settings.png" style="width:15px;">Setting</a>
-                            <a href="TeacherLogout.php" class="dropdown-item"><img src="Images/sign-out-alt.png" style="width:15px;">Logout</a>
+                            <a href="AdminProfile.php" class="dropdown-item"><img src="Images/user2.png" style="width:15px;">Profile</a>
+                            <a href="AdminProfileEdit.php" class="dropdown-item"><img src="Images/settings.png" style="width:15px;">Setting</a>
+                            <a href="AdminLogout.php" class="dropdown-item"><img src="Images/sign-out-alt.png" style="width:15px;">Logout</a>
                         </div>
                     </li>
                 </ul>
