@@ -96,37 +96,38 @@
                             }
 
 
-                            // SQL query
+                            //SQL query
                             $sql = "SELECT Grade, DayOfWeek, Period
                                     FROM teaching
                                     WHERE TeacherId = '$TeacherId' AND TeachingYear = YEAR(CURDATE())";
 
                             $result = mysqli_query($connection,$sql);
 
-                            // Check for errors in the query
+                            //check for errors in the query
                             if (!$result) {
-                                // Print error message and exit
-                                echo "Error: " . mysqli_error($connection);
+                                //print error message and exit
+                                echo "<script>alert('Error: " . mysqli_error($connection) . "');</script>";
                                 exit();
                             }
                         
-                            // Output data
+                            //output data
                             if (mysqli_num_rows($result) > 0) {
-                                // Initialize array to store subjects by day of week and period
+                                //initialize array to store subjects by day of week and period
                                 $classByDayPeriod = array(
-                                    'Monday' => array_fill(1, 8, ''), // Assuming 8 periods in a day
+                                    //initialize each day with 8 periods
+                                    'Monday' => array_fill(1, 8, ''),
                                     'Tuesday' => array_fill(1, 8, ''),
                                     'Wednesday' => array_fill(1, 8, ''),
                                     'Thursday' => array_fill(1, 8, ''),
                                     'Friday' => array_fill(1, 8, '')
                                 );
 
-                                // Store subjects in the array by day of week and period
+                                //store subjects in the array by day of week and period
                                 while ($row = mysqli_fetch_assoc($result)) {
                                     $classByDayPeriod[$row['DayOfWeek']][$row['Period']] = $row['Grade'];
                                 }
 
-                                // Start the table
+                                //start the table
                                 echo "<table class='table'>";
                                 echo "<thead class='table-dark'>";
                                 echo "<tr>";
@@ -139,41 +140,45 @@
                                 echo "</thead>";
                                 echo "<tbody>";
 
-                                // Determine the maximum number of periods for any day
-                                $maxPeriods = 8; // Assuming 8 periods in a day
-                                $intervalAdded = false; // Initialize interval added flag
+                                //determine the maximum number of periods for any day
+                                $maxPeriods = 8;
+                                //initialize interval added flag
+                                $intervalAdded = false;
                                 
-                                // Output data for each period
+                                //output data for each period
                                 for ($period = 1; $period <= $maxPeriods; $period++) {
                                     echo "<tr>";
+                                    //output subjects for each day
                                     foreach ($classByDayPeriod as $day => $periods) {
                                         echo "<td>";
+                                        //check if the period is set
                                         if (isset($periods[$period]) && !empty($periods[$period])) {
                                             echo "Grade " . $periods[$period];
                                         } else {
+                                            //period in not, print free
                                             echo "Free";
                                         }
                                         echo "</td>";
                                     }
                                     echo "</tr>";
 
-                                    // Add an interval row after every 4 rows filled and only once
+                                    //add an interval row after every 4 rows filled and only once
                                     if ($period % 4 == 0 && !$intervalAdded && $period < $maxPeriods) {
                                         echo "<tr><th colspan='5' class='table-success interval'>INTERVAL</th></tr>";
-                                        // Set interval added flag to true
+                                        //set interval added flag to true
                                         $intervalAdded = true;
                                     }
                                 }
                             
-                                // End the table
+                                //end the table
                                 echo "</tbody>";
                                 echo "</table>";
                             } else {
-                                // If no results found
+                                //if no results found
                                 echo "No subjects found for this grade and year.";
                             }
                         
-                            // Close the database connection
+                            //close the database connection
                             mysqli_close($connection);
                         ?>
                     </div>
