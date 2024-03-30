@@ -63,10 +63,21 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a href="Announcement.php" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">
+                        <a href="#" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">
                             <img src="Images/absentism.png" style="width:15px;">
                             Announcements
                         </a>
+                        <ul id="posts" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                            <li class="sidebar-item">
+                                <a href="AnnouncementCreate.php" class="sidebar-link">Create Announcement</a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="AnnouncementUpdate.php" class="sidebar-link">Update Announcement</a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="AnnouncementDelete.php" class="sidebar-link">Delete Announcement</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="sidebar-item">
                         <a href="#" class="sidebar-link collapsed" data-bs-target="#posts" data-bs-toggle="collapse"
