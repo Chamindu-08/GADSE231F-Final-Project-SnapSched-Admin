@@ -28,14 +28,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo '<script>
                         var confirmMsg = confirm("Your session has timed out. Please log in again.");
                         if (confirmMsg) {
-                            window.location.href = "AdminLogin.php";
+                            window.location.href = "AdminLoginRegister.php";
                         }
                     </script>';
                 exit();
             }
 
             //verify current password
-            $sqlVerifyPassword = "SELECT OSPassword FROM otherstaff WHERE StudentId='$adminEmail'";
+            $sqlVerifyPassword = "SELECT OSPassword FROM otherStaff WHERE OSEmail='$adminEmail'";
             $resultVerifyPassword = mysqli_query($connection, $sqlVerifyPassword);
 
             if (mysqli_num_rows($resultVerifyPassword) > 0) {
@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $result = mysqli_query($connection, $sqlUpdatePassword);
 
                         if ($result) {
-                            echo "<script>alert('Student password updated successfully');</script>";
+                            echo "<script>alert('Password updated successfully');</script>";
                         } else {
                             echo "<script>alert('Error updating student password: " . mysqli_error($connection) . "');</script>";
                         }

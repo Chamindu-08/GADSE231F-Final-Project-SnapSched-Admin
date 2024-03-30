@@ -10,12 +10,15 @@ if (!$connection) {
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve form data
-    $firstName = $_POST['first_name'];
-    $lastName = $_POST['last_name'];
-    $surName = $_POST['sur_name'];
+    $firstName = $_POST['firstName'];
+    $lastName = $_POST['lastName'];
+    $surName = $_POST['surName'];
     $address = $_POST['address'];
     $email = $_POST['email'];
-    $contact_no = $_POST['contact_no'];
+    $nic = $_POST['nic'];
+    $designation = $_POST['designation'];
+    $assumeDate = $_POST['assumeDate'];
+    $contactNo = $_POST['contactNo'];
     $currentPassword = $_POST['current_password'];
     $newPassword = $_POST['new_password'];
     $confirmPassword = $_POST['confirm_password'];
@@ -28,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo '<script>
                 var confirmMsg = confirm("Your session has timed out. Please log in again.");
                 if (confirmMsg) {
-                    window.location.href = "AdminLogin.php";
+                    window.location.href = "AdminLoginRegister.php";
                 }
             </script>';
         exit();
@@ -40,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<script>alert('Current Password is required.');</script>";
         } else {
             // Verify current password
-            $sqlVerifyPassword = "SELECT OSPassword FROM otherstaff WHERE StudentId='$adminEmail'";
+            $sqlVerifyPassword = "SELECT OSPassword FROM otherStaff WHERE OSEmail='$adminEmail'";
             $resultVerifyPassword = mysqli_query($connection, $sqlVerifyPassword);
 
             if (mysqli_num_rows($resultVerifyPassword) > 0) {
@@ -55,14 +58,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         echo "<script>alert('Password and Confirm Password do not match. Please enter again.');</script>";
                     } else {
                         // Update teacher table
-                        $sqlUpdatePassword = "UPDATE otherstaff SET OSPassword='$newPassword' WHERE StudentId='$adminEmail'";
+                        $sqlUpdatePassword = "UPDATE otherStaff SET OSPassword='$newPassword' WHERE OSEmail='$adminEmail'";
                 
                         $result = mysqli_query($connection, $sqlUpdatePassword);
 
                         if ($result) {
-                            echo "<script>alert('Teacher record updated successfully');</script>";
+                            echo "<script>alert('Password updated successfully');</script>";
                         } else {
-                            echo "<script>alert('Error updating teacher record.');</script>";
+                            echo "<script>alert('Error updating password: " . mysqli_error($connection) . "');</script>";
                         }
                     }
                 }
@@ -72,12 +75,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
         // Update teacher table without password change
-        $sqlTeacher = "UPDATE otherstaff SET FirstName='$firstName', LastName='$lastName', SurName='$surName', OSAddress='$address', OSEmail='$email', OSContactNo='$contact_no' WHERE OSEmail='$adminEmail'";
+        $sqlAdmin = "UPDATE otherStaff SET FirstName='$firstName', LastName='$lastName', SurName='$surName', OSAddress='$address', OSEmail='$email', NIC='$nic', OSContactNo='$contactNo', AssumeDate='$assumeDate', Designation='$designation' WHERE OSEmail='$adminEmail'";
         
-        if (mysqli_query($connection, $sqlTeacher)) {
-            echo "<script>alert('Teacher record updated successfully');</script>";
+        if (mysqli_query($connection, $sqlAdmin)) {
+            echo "<script>alert('Record updated successfully');</script>";
+
         } else {
-            echo "<script>alert('Error updating teacher record: " . mysqli_error($connection) . "');</script>";
+            echo "<script>alert('Error updating record: " . mysqli_error($connection) . "');</script>";
         }
     }
 }
@@ -90,24 +94,27 @@ if(isset($_COOKIE['adminEmail'])){
     echo '<script>
             var confirmMsg = confirm("Your session has timed out. Please log in again.");
             if (confirmMsg) {
-                window.location.href = "AdminLogin.php";
+                window.location.href = "AdminLoginRegister.php";
             }
         </script>';
     exit();
 }
 
-$sql = "SELECT * FROM teacher WHERE TeacherEmail='$teacherEmail'";
+$sql = "SELECT * FROM otherStaff WHERE OSEmail='$adminEmail'";
 
 $result = mysqli_query($connection, $sql);
 
 if (mysqli_num_rows($result) > 0) {
     $row = mysqli_fetch_assoc($result);
-    $first_name = $row['FirstName'];
-    $last_name = $row['LastName'];
-    $sur_name = $row['SurName'];
+    $firstName = $row['FirstName'];
+    $lastName = $row['LastName'];
+    $surName = $row['SurName'];
     $address = $row['OSAddress'];
     $email = $row['OSEmail'];
-    $contact_no = $row['OSContactNo'];
+    $nic = $row['NIC'];
+    $designation = $row['Designation'];
+    $assumeDate = $row['AssumeDate'];
+    $contactNo = $row['OSContactNo'];
 } else {
     echo "<script>alert('Teacher record not found.');</script>";
 }
@@ -131,7 +138,7 @@ mysqli_close($connection);
 </head>
 <body>
     <div class="wrapper">
-        <?php include 'Includes/TeacherSideNav.php'; ?>
+        <?php include 'Include/AdminSideBar.php'; ?>
 
             
             <main class="content px-3 py-2">
@@ -152,17 +159,17 @@ mysqli_close($connection);
                                     <tr>
                                         <td>
                                             First Name :<br>
-                                            <input type="text" name="first_name" value="<?php echo $first_name; ?>">
+                                            <input type="text" name="firstName" value="<?php echo $firstName; ?>">
                                         </td>
                                         <td>
                                             Last Name :<br>
-                                            <input type="text" name="last_name" value="<?php echo $last_name; ?>">
+                                            <input type="text" name="lastName" value="<?php echo $lastName; ?>">
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             Sure Name :<br>
-                                            <input type="text" name="sur_name" value="<?php echo $sur_name; ?>">
+                                            <input type="text" name="surName" value="<?php echo $surName; ?>">
                                         </td>
                                         <td>
                                             Address :<br>
@@ -171,12 +178,28 @@ mysqli_close($connection);
                                     </tr>
                                     <tr>
                                         <td>
+                                            NIC :<br>
+                                            <input type="text" name="nic" value="<?php echo $nic; ?>">
+                                        </td>
+                                        <td>
+                                            Assume Date :<br>
+                                            <input type="date" name="assumeDate" value="<?php echo $assumeDate; ?>">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
                                             Contact no :<br>
-                                            <input type="text" name="contact_no" value="<?php echo $contact_no; ?>">
+                                            <input type="text" name="contactNo" value="<?php echo $contactNo; ?>">
                                         </td>
                                         <td>
                                             Email :<br>
                                             <input type="email" name="email" value="<?php echo $email; ?>">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Designation :<br>
+                                            <input type="text" name="designation" value="<?php echo $designation; ?>">
                                         </td>
                                     </tr>
                                     <tr>

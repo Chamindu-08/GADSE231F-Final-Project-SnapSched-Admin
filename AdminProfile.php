@@ -15,6 +15,7 @@ $admission_no = "";
 $Assume_date = "";
 $address = "";
 $email = "";
+$nic = "";
 $designation = "";
 $contact_no = "";
 $password = "";
@@ -27,12 +28,11 @@ if(isset($_COOKIE['adminEmail'])){
     echo '<script>
             var confirmMsg = confirm("Your session has timed out. Please log in again.");
             if (confirmMsg) {
-                window.location.href = "AdminLogin.php";
+                window.location.href = "AdminLoginRegister.php";
             }
         </script>';
     exit();
 }
-
 
 // SQL query to retrieve student information
 $sql = "SELECT * FROM otherstaff WHERE OSEmail = '$adminEmail'";
@@ -51,11 +51,13 @@ if ($result->num_rows > 0) {
     $sure_name = $row["SurName"];
     $admission_no = $row["OSId"];
     $admission_date = $row["AssumeDate"];
+    $nic = $row["NIC"];
     $address = $row["OSAddress"];
     $email = $row["OSEmail"];
+
     $contact_no = $row["OSContactNo"];
     $designation = $row["Designation"];
-    $password = $row["StudentPassword"];
+    $password = $row["OSPassword"];
 } else {
     echo "0 results";
 }
@@ -86,7 +88,7 @@ mysqli_close($connection);
   </script>
 
     <div class="wrapper">
-        <?php include 'Includes/DashSideNav.php'; ?>
+        <?php include 'Include/AdminSideBar.php'; ?>
             
             <main class="content px-3 py-2">
                 <div class="container-fluid">
@@ -140,11 +142,15 @@ mysqli_close($connection);
                                                     <label><?php echo $contact_no; ?></label>
                                                 </td>
                                                 <td>
-                                                    <h5>Designation :</h5>
-                                                    <label><?php echo $designation; ?></label>
+                                                    <h5>NIC :</h5>
+                                                    <label><?php echo $nic; ?></label>
                                                 </td>
                                             </tr>
                                             <tr>
+                                            <td>
+                                                    <h5>Designation :</h5>
+                                                    <label><?php echo $designation; ?></label>
+                                                </td>
                                                 <td>
                                                     <h5>Password :</h5>
                                                     <label><?php echo $password; ?></label>
