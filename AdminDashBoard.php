@@ -127,18 +127,18 @@
                                 <img class="card-img-top" src="Images/Announcement.JPG" alt="Card image" style="width:100%">
                                 <div class="card-body">
                                     <li class="sidebar-item1">
-                                        <a href="#" class="sidebar-link1" data-bs-target="#posts" aria-expanded="false">
+                                    <a href="#" class="sidebar-link1 collapsed" style="text" data-bs-target="#announcementOptions" data-bs-toggle="collapse" aria-expanded="false">
                                             Announcements
                                         </a>
                                         <ul id="announcementOptions" class="sidebar-dropdown1 list-unstyled collapse" data-bs-parent="#sidebar">
                                             <li class="sidebar-item1">
-                                                <a href="TeacherProfile.php" class="sidebar-link1">Create Announcement</a>
+                                                <a href="AnnouncementCreate.php" class="sidebar-link1">Create Announcement</a>
                                             </li>
                                             <li class="sidebar-item1">
-                                                <a href="TeacherTimeTable.php" class="sidebar-link1">Edit Announcement</a>
+                                                <a href="AnnouncementUpdate.php" class="sidebar-link1">Edit Announcement</a>
                                             </li>
                                             <li class="sidebar-item1">
-                                                <a href="TeacherRegister.php" class="sidebar-link1">Delete Announcement</a>
+                                                <a href="AnnouncementDelete.php" class="sidebar-link1">Delete Announcement</a>
                                             </li>
                                         </ul>
                                     </li>

@@ -63,8 +63,8 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a href="#" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">
-                            <img src="Images/absentism.png" style="width:15px;">
+                    <a href="#" class="sidebar-link collapsed" data-bs-target="#posts" data-bs-toggle="collapse"
+                            aria-expanded="false"><img src="Images/user1.png" style="width:15px;">
                             Announcements
                         </a>
                         <ul id="posts" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">

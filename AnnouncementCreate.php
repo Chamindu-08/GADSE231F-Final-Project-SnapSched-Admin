@@ -2,14 +2,16 @@
 if(isset($_POST["date"], $_POST["announcement"])) {
     //get the form data
     $Date = $_POST["date"];
+    $Subject = $_POST["subject"];
     $Announcement = $_POST["announcement"];
+
 
     // Check if teacher is set, if not, set it to empty string
     $Student = isset($_POST["student"]) ? $_POST["student"] : "";
     $Teacher = isset($_POST["teacher"]) ? $_POST["teacher"] : ""; 
 
     //validate fields
-    if (empty($Date) || empty($Announcement) || (empty($Student) && empty($Teacher))) {
+    if (empty($Date) || empty($Announcement) || empty($Subject) || (empty($Student) && empty($Teacher))) {
         echo "<script>alert('All fields are required.');</script>";
     } else {
         //include database connection
@@ -47,7 +49,7 @@ if(isset($_POST["date"], $_POST["announcement"])) {
         }
 
         //insert data into the database
-        $sql = "INSERT INTO announcement (AnnouncementId, Announcement,Recipient, AnnouncementDate) VALUES ('$nextAnnouncementId', '$Announcement','$Recipient', '$Date')";
+        $sql = "INSERT INTO announcement (AnnouncementId, Subject, Announcement, Recipient, AnnouncementDate) VALUES ('$nextAnnouncementId','$Subject', '$Announcement','$Recipient', '$Date')";
 
         //execute the query
         $result = mysqli_query($connection, $sql);
@@ -70,7 +72,7 @@ if(isset($_POST["date"], $_POST["announcement"])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absentism | Teacher</title>
+    <title>Announcement | Teacher</title>
 
     <!-- stylesheet -->
     <link rel="stylesheet" href="CSS/Dashboard.css" />
@@ -102,6 +104,11 @@ if(isset($_POST["date"], $_POST["announcement"])) {
                                             <input type="date" class="form-control" name="date">
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>
+                                            Subject :
+                                            <input type="text" class="form-control" name="subject">
+                                        </td>
                                     <tr>
                                         <td>
                                             Announcement :
