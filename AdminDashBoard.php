@@ -99,6 +99,9 @@
                                             <li class="sidebar-item1">
                                                 <a href="TeacherRegister.php" class="sidebar-link1">Teacher Register</a>
                                             </li>
+                                            <li class="sidebar-item1">
+                                                <a href="Absentism.php" class="sidebar-link1">Teacher Absenteeism</a>
+                                            </li>
                                         </ul>
                                     </li>
                                 </div>
