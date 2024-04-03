@@ -2,12 +2,12 @@
 //get database connection
 include 'DBConnection/DBConnection.php';
 
-// Check connection
+//check connection
 if (!$connection) {
     echo "Connection failed";
 }
 
-// Check if the form is submitted
+//check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve form data
     $firstName = $_POST['firstName'];
@@ -37,12 +37,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Check if newPassword or confirmPassword is empty and currentPassword is not empty
+    //check if newPassword or confirmPassword is empty and currentPassword is not empty
     if (!empty($newPassword) || !empty($confirmPassword)) {
         if (empty($currentPassword)) {
             echo "<script>alert('Current Password is required.');</script>";
         } else {
-            // Verify current password
+            //verify current password
             $sqlVerifyPassword = "SELECT OSPassword FROM otherStaff WHERE OSEmail='$adminEmail'";
             $resultVerifyPassword = mysqli_query($connection, $sqlVerifyPassword);
 
@@ -53,33 +53,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($currentPassword != $storedPassword) {
                     echo "<script>alert('Incorrect current password.');</script>";
                 } else {
-                    // Check if newPassword and confirmPassword match
+                    //check if newPassword and confirmPassword match
                     if ($newPassword != $confirmPassword) {
                         echo "<script>alert('Password and Confirm Password do not match. Please enter again.');</script>";
                     } else {
-                        // Update teacher table
-                        $sqlUpdatePassword = "UPDATE otherStaff SET OSPassword='$newPassword' WHERE OSEmail='$adminEmail'";
-                
-                        $result = mysqli_query($connection, $sqlUpdatePassword);
+                        //validate new password and confirm password 8 characters long
+                        if (strlen($newPassword) < 8 || strlen($confirmPassword) < 8) {
+                            echo "<script>alert('Password must be at least 8 characters long.');</script>";
+                            exit();
+                        }
 
-                        if ($result) {
-                            echo "<script>alert('Password updated successfully');</script>";
+                        //validate email
+                        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                            echo "<script>alert('Invalid email format.');</script>";
+                            exit();
+                        }
+
+                        //validate contact number
+                        if (!preg_match("/^[0-9]{10}$/", $contactNo)) {
+                            echo "<script>alert('Invalid contact number.');</script>";
+                            exit();
+                        }
+
+                        //validate NIC 12 or 10 characters long
+                        if (strlen($nic) != 12 && strlen($nic) != 10) {
+                            echo "<script>alert('Invalid NIC.');</script>";
+                            exit();
+                        }
+
+                        //update teacher table with password change
+                        $sqlAdmin = "UPDATE otherStaff SET FirstName='$firstName', LastName='$lastName', SurName='$surName', OSAddress='$address', OSEmail='$email', NIC='$nic', OSContactNo='$contactNo', AssumeDate='$assumeDate', Designation='$designation', OSPassword='$newPassword' WHERE OSEmail='$adminEmail'";
+
+                        if (mysqli_query($connection, $sqlAdmin)) {
+                            echo "<script>alert('Record updated successfully');</script>";
+
                         } else {
-                            echo "<script>alert('Error updating password: " . mysqli_error($connection) . "');</script>";
+                            echo "<script>alert('Error updating record: " . mysqli_error($connection) . "');</script>";
                         }
                     }
                 }
             } else {
-                die("Teacher record not found.");
+                echo "<script>alert('Error verifying current password: " . mysqli_error($connection) . "');</script>";
             }
         }
     } else {
-        // Update teacher table without password change
+        //update teacher table without password change
         $sqlAdmin = "UPDATE otherStaff SET FirstName='$firstName', LastName='$lastName', SurName='$surName', OSAddress='$address', OSEmail='$email', NIC='$nic', OSContactNo='$contactNo', AssumeDate='$assumeDate', Designation='$designation' WHERE OSEmail='$adminEmail'";
         
         if (mysqli_query($connection, $sqlAdmin)) {
             echo "<script>alert('Record updated successfully');</script>";
-
         } else {
             echo "<script>alert('Error updating record: " . mysqli_error($connection) . "');</script>";
         }
@@ -140,7 +162,6 @@ mysqli_close($connection);
     <div class="wrapper">
         <?php include 'Include/AdminSideBar.php'; ?>
 
-            
             <main class="content px-3 py-2">
                 <div class="container-fluid">
                     <!-- Table Element -->
@@ -159,47 +180,47 @@ mysqli_close($connection);
                                     <tr>
                                         <td>
                                             First Name :<br>
-                                            <input type="text" name="firstName" value="<?php echo $firstName; ?>">
+                                            <input type="text" name="firstName" value="<?php echo $firstName; ?>" required>
                                         </td>
                                         <td>
                                             Last Name :<br>
-                                            <input type="text" name="lastName" value="<?php echo $lastName; ?>">
+                                            <input type="text" name="lastName" value="<?php echo $lastName; ?>" required>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             Sure Name :<br>
-                                            <input type="text" name="surName" value="<?php echo $surName; ?>">
+                                            <input type="text" name="surName" value="<?php echo $surName; ?>" required>
                                         </td>
                                         <td>
                                             Address :<br>
-                                            <input type="text" name="address" value="<?php echo $address; ?>">
+                                            <input type="text" name="address" value="<?php echo $address; ?>" required>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             NIC :<br>
-                                            <input type="text" name="nic" value="<?php echo $nic; ?>">
+                                            <input type="text" name="nic" value="<?php echo $nic; ?>" required>
                                         </td>
                                         <td>
                                             Assume Date :<br>
-                                            <input type="date" name="assumeDate" value="<?php echo $assumeDate; ?>">
+                                            <input type="date" name="assumeDate" value="<?php echo $assumeDate; ?>" required>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             Contact no :<br>
-                                            <input type="text" name="contactNo" value="<?php echo $contactNo; ?>">
+                                            <input type="text" name="contactNo" value="<?php echo $contactNo; ?>" required>
                                         </td>
                                         <td>
                                             Email :<br>
-                                            <input type="email" name="email" value="<?php echo $email; ?>">
+                                            <input type="email" name="email" value="<?php echo $email; ?>" required>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             Designation :<br>
-                                            <input type="text" name="designation" value="<?php echo $designation; ?>">
+                                            <input type="text" name="designation" value="<?php echo $designation; ?>" required>
                                         </td>
                                     </tr>
                                     <tr>
@@ -233,7 +254,6 @@ mysqli_close($connection);
             </main>
         </div>
     </div>
-
 
     <script src="js/Dashboard.js"></script>
     <!-- link Bootstap -->

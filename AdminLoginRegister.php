@@ -39,6 +39,42 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 				if (mysqli_num_rows($result) > 0) {
 					echo "<script>alert('Email already exists!');</script>";
 				} else {
+					//validate contact number
+					if (!preg_match("/^[0-9]{10}+$/", $contactNo)) {
+						echo "<script>alert('Invalid contact number!');</script>";
+					}
+
+					//validate NIC 12 or 10 characters long
+					if (strlen($nic) != 12 && strlen($nic) != 10) {
+						echo "<script>alert('Invalid NIC!');</script>";
+					}
+
+					//can not enter existing NIC number
+					$check = "SELECT * FROM otherStaff WHERE NIC='$nic'";
+					$result = mysqli_query($connection, $check);
+
+					if (mysqli_num_rows($result) > 0) {
+						echo "<script>alert('NIC already exists!');</script>";
+					}
+
+					//validate password and confirm password 8 characters long
+					if (strlen($password) < 8 || strlen($confirmPassword) < 8) {
+						echo "<script>alert('Password must be at least 8 characters long.');</script>";
+					}
+
+					//validate email
+					if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+						echo "<script>alert('Invalid email!');</script>";
+					}
+
+					//can not enter existing email
+					$check = "SELECT * FROM otherStaff WHERE OSEmail='$email'";
+					$result = mysqli_query($connection, $check);
+
+					if (mysqli_num_rows($result) > 0) {
+						echo "<script>alert('Email already exists!');</script>";
+					}
+
                     //generate OSId for new user (OSId = 01 like that)
                     $sql = "SELECT MAX(OSId) AS maxId FROM otherStaff";
                     $result = mysqli_query($connection, $sql);
@@ -69,7 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 		}
 	}
 
-        
 
     if (isset($_POST['login'])) {
         // Login functionality
@@ -85,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             $_SESSION['userNames'] = $username;
 
             //cookie set for 30 minutes
-            setcookie('adminEmail', $username, time() + 1800, '/');
+            setcookie('adminEmail', $username, time() + (30 * 60), '/');
 
             header("Location: AdminDashBoard.php");
             exit();

@@ -101,18 +101,18 @@ if(isset($_POST["date"], $_POST["announcement"])) {
                                     <tr>
                                         <td>
                                             Date : </br>
-                                            <input type="date" class="form-control" name="date">
+                                            <input type="date" class="form-control" name="date" required>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             Subject :
-                                            <input type="text" class="form-control" name="subject">
+                                            <input type="text" class="form-control" name="subject" required>
                                         </td>
                                     <tr>
                                         <td>
                                             Announcement :
-                                            <textarea class="form-control" rows="10" name="announcement"></textarea>
+                                            <textarea class="form-control" rows="10" name="announcement" required></textarea>
                                         </td>
                                     </tr>
                                     <tr>
@@ -121,7 +121,7 @@ if(isset($_POST["date"], $_POST["announcement"])) {
                                             <input type="checkbox" name="teacher" value="teacher">Teacher
                                         </td>
                                     <tr>
-                                        <td colspan="2"><button type="submit" class="btnStyle1 mx-2">submit</button></td>
+                                        <td colspan="2"><button type="submit" class="btnStyle1 mx-2">Submit</button></td>
                                     </tr>
                                 </tbody>
                             </table>

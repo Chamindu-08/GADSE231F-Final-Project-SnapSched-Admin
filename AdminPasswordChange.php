@@ -34,6 +34,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 exit();
             }
 
+            //vlaidate new password and confirm password 8 characters long
+            if (strlen($newPassword) < 8 || strlen($confirmPassword) < 8) {
+                echo "<script>alert('Password must be at least 8 characters long.');</script>";
+                exit();
+            }
+            
             //verify current password
             $sqlVerifyPassword = "SELECT OSPassword FROM otherStaff WHERE OSEmail='$adminEmail'";
             $resultVerifyPassword = mysqli_query($connection, $sqlVerifyPassword);
