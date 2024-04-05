@@ -1,9 +1,25 @@
+<?php
+//check cookie
+if(isset($_COOKIE['adminEmail'])){
+    $adminEmail = $_COOKIE['adminEmail'];
+} else {
+    //redirect to login page
+    echo '<script>
+            var confirmMsg = confirm("Your session has timed out. Please log in again.");
+            if (confirmMsg) {
+                window.location.href = "AdminLoginRegister.php";
+            }
+        </script>';
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>DashBoard | Admin</title>
 
     <!-- Bootstrap link -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -73,6 +89,9 @@
                                             <li class="sidebar-item1">
                                                 <a href="StudentRegister.php" class="sidebar-link1">Student Register</a>
                                             </li>
+                                            <li class="sidebar-item1">
+                                                <a href="LeaveStudent.php" class="sidebar-link1">Student Leave</a>
+                                            </li>
                                         </ul>
                                     </li>
                                 </div>
@@ -101,6 +120,9 @@
                                             </li>
                                             <li class="sidebar-item1">
                                                 <a href="Absentism.php" class="sidebar-link1">Teacher Absenteeism</a>
+                                            </li>
+                                            <li class="sidebar-item1">
+                                                <a href="LeaveTeacher.php" class="sidebar-link1">Teacher Leave</a>
                                             </li>
                                         </ul>
                                     </li>

@@ -7,6 +7,9 @@ if (!$connection) {
     echo "Connection failed";
 }
 
+//initialize validation messages variable
+$validationMessages = "";
+
 //check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //retrieve form data
@@ -25,46 +28,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     //check all fields are filled
     if (empty($teacher_id) || empty($first_name) || empty($last_name) || empty($sur_name) || empty($address) || empty($contact_no) || empty($email) || empty($nic) || empty($assume_date) || empty($password) || empty($confirmPassword) || empty($subject)){
-        echo "<script>alert('Please fill all fields.');</script>";
-        exit();
+        $validationMessages .= "Please fill all fields. ";
     }
 
     //validate email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo "<script>alert('Invalid email format.');</script>";
-        exit();
-    }
-
-    //validate password and confirm password 8 characters long
-    if (strlen($password) < 8 || strlen($confirmPassword) < 8) {
-        echo "<script>alert('Password must be at least 8 characters long.');</script>";
-        exit();
+        $validationMessages .= "Invalid email format. ";
     }
 
     //validate contact number
     if (!preg_match("/^[0-9]{10}+$/", $contact_no)) {
-        echo "<script>alert('Invalid contact number!');</script>";
-        exit();
+        $validationMessages .= "Invalid contact number. ";
     }
 
     //validate NIC 12 or 10 characters long
     if (strlen($nic) != 12 && strlen($nic) != 10) {
-        echo "<script>alert('Invalid NIC!');</script>";
-        exit();
+        $validationMessages .= "Invalid NIC. ";
+    }
+
+    //validate password and confirm password 4 characters long
+    if (strlen($password) < 4 || strlen($confirmPassword) < 4) {
+        $validationMessages .= "Password must be at least 4 characters long. ";
     }
 
     //confirm password and password match
     if ($password != $confirmPassword) {
-        echo "<script>alert('Password and Confirm Password do not match. Please enter again.');</script>";
-        exit();
+        $validationMessages .= "Passwords do not match. ";
     }
     //check if teacher ID exists in the database
     $check = "SELECT * FROM teacher WHERE TeacherId='$teacher_id'";
     $result = mysqli_query($connection, $check);
 
     if (mysqli_num_rows($result) > 0) {
-        echo "<script>alert('Teacher ID already exists!');</script>";
-        exit();
+        $validationMessages .= "Teacher ID already exists. ";
     }
 
     //check if NIC exists in the database
@@ -72,8 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = mysqli_query($connection, $check);
 
     if (mysqli_num_rows($result) > 0) {
-        echo "<script>alert('NIC already exists!');</script>";
-        exit();
+        $validationMessages .= "NIC already exists. ";
     }
 
     //check if email exists in the database
@@ -81,28 +76,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = mysqli_query($connection, $check);
 
     if (mysqli_num_rows($result) > 0) {
-        echo "<script>alert('Email already exists!');</script>";
-        exit();
+        $validationMessages .= "Email already exists. ";
     }
 
-    //insert teacher details into the database
-    $sqlTeacher = "INSERT INTO teacher (TeacherId, FirstName, LastName, SurName, TeacherAddress, TeacherContactNo, NIC, TeacherEmail, TeacherPassword, AssumeDate, TeacherStatus) VALUES ('$teacher_id', '$first_name', '$last_name', '$sur_name', '$address', '$contact_no', '$nic', '$email', '$password', '$assume_date', 'Avilable')";
-
-    //teacher teach subjects
-    $sqlTeacherTeach = "INSERT INTO teach (TeacherId, SubjectId) VALUES ('$teacher_id', '$subject')";
-    //execute the query
-    $result = mysqli_query($connection, $sqlTeacher);
-
-    //check if the query is executed
-    if ($result) {
-        echo "<script>alert('Teacher registered successfully.');</script>";
+    //if there are validation errors, display them
+    if (!empty($validationMessages)) {
+        $validationMessages = '<div class="alert alert-danger">' . $validationMessages . '</div>';
     } else {
-        echo "<script>alert('Error: " . $sqlTeacher . "<br>" . mysqli_error($connection) . "');</script>";
+        //insert teacher details into the database
+        $sqlTeacher = "INSERT INTO teacher (TeacherId, FirstName, LastName, SurName, TeacherAddress, TeacherContactNo, NIC, TeacherEmail, TeacherPassword, AssumeDate, TeacherStatus) VALUES ('$teacher_id', '$first_name', '$last_name', '$sur_name', '$address', '$contact_no', '$nic', '$email', '$password', '$assume_date', 'Available')";
+
+        //teacher teach subjects
+        $sqlTeacherTeach = "INSERT INTO teach (TeacherId, SubjectId) VALUES ('$teacher_id', '$subject')";
+        //execute the query
+        $resultTeacher = mysqli_query($connection, $sqlTeacher);
+        $resultTeacherTeach = mysqli_query($connection, $sqlTeacherTeach);
+
+        //check if the query executed successfully
+        if ($resultTeacher && $resultTeacherTeach) {
+            $validationMessages = '<div class="alert alert-success">Teacher registered successfully</div>';
+
+            //send email to the teacher
+         /*   $to = $email;
+            $subject = "Account Registration";
+            $message = "Dear " . $first_name . " " . $last_name . ",\n\nYour account has been successfully registered.\n\nYour login details are as follows:\nEmail: " . $email . "\nPassword: " . $password . "\n\nPlease login to the system to view your account details.\n\nThank you.";
+            $headers = "From: School Management System";
+
+            mail($to, $subject, $message, $headers);  */
+        } else {
+            $validationMessages = '<div class="alert alert-danger">Error: ' . mysqli_error($connection) . '</div>';
+        }
+
+        //clear form data
+        $teacher_id = $first_name = $last_name = $sur_name = $address = $contact_no = $email = $nic = $assume_date = $password = $confirmPassword = $subject = "";
     }
 }
 
 //close the database connection
-mysqli_close($connection);
+if (isset($connection)) {
+    mysqli_close($connection);
+}
 ?> 
 
 <!DOCTYPE html>
@@ -122,134 +135,129 @@ mysqli_close($connection);
     <div class="wrapper">
         <?php include 'Include/AdminSideBar.php'; ?>
 
-            
-            <main class="content px-3 py-2">
-                <div class="container-fluid">
-                    <!-- Table Element -->
-                    <div class="card border-0">
-                        <div class="card-header">
-                            <h4 class="card-title">
-                                Teacher Registration
-                            </h4>
-                        </div>
-                        <div class="card-body">
-                            <form name="teacherProUp" action="#" method="post">
-                                <table class="puTable">
-                                    <tr>
-                                        <th colspan="2">Teacher Details</th>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Teacher ID :<br>
-                                            <input type="text" name="teacher_id" required>
-                                    <tr>
-                                        <td>
-                                            First Name :<br>
-                                            <input type="text" name="first_name" required>
-                                        </td>
-                                        <td>
-                                            Last Name :<br>
-                                            <input type="text" name="last_name" required>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Surn Name :<br>
-                                            <input type="text" name="sur_name" required>
-                                        </td>
-                                        <td>
-                                            Address :<br>
-                                            <input type="text" name="address" required>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Contact no :<br>
-                                            <input type="text" name="contact_no" required>
-                                        </td>
-                                        <td>
-                                            Email :<br>
-                                            <input type="email" name="email" required>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            NIC :<br>
-                                            <input type="text" name="nic" required>
-                                        </td>
-                                        <td>
-                                            Assume Date :<br>
-                                            <input type="date" name="assume_date" required>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th colspan="2">Subject</th>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Subject :<br>
-                                            <select name="subject" required>
-                                                <!-- fetch subjects from the database -->
-                                                <?php
-                                                //get database connection
-                                                include 'DBConnection/DBConnection.php';
+        <main class="content px-3 py-2">
+            <div class="container-fluid">
+                <!-- Table Element -->
+                <div class="card border-0">
+                    <div class="card-header">
+                        <h4 class="card-title">
+                            Teacher Registration
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <?php echo $validationMessages; ?>
+                        <form name="teacherProUp" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                            <table class="puTable">
+                                <tr>
+                                    <th colspan="2">Teacher Details</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Teacher ID:<br>
+                                        <input type="text" name="teacher_id" required>
+                                    </td>
+                                    <td>
+                                        First Name:<br>
+                                        <input type="text" name="first_name" required>
+                                    </td>
+                                    <!-- Add other fields here -->
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Last Name:<br>
+                                        <input type="text" name="last_name" required>
+                                    </td>
+                                    <td>
+                                        Surn Name:<br>
+                                        <input type="text" name="sur_name" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Address:<br>
+                                        <input type="text" name="address" required>
+                                    </td>
+                                    <td>
+                                        Contact no:<br>
+                                        <input type="text" name="contact_no" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Email:<br>
+                                        <input type="email" name="email" required>
+                                    </td>
+                                    <td>
+                                        NIC:<br>
+                                        <input type="text" name="nic" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Assume Date:<br>
+                                        <input type="date" name="assume_date" required>
+                                    </td>
+                                    <td>
+                                        Subject:<br>
+                                        <select name="subject" required>
+                                            <!-- Fetch subjects from the database -->
+                                            <?php
+                                            //get database connection
+                                            include 'DBConnection/DBConnection.php';
 
-                                                //check connection
-                                                if (!$connection) {
-                                                    echo "Connection failed";
+                                            //check connection
+                                            if (!$connection) {
+                                                echo "Connection failed";
+                                            }
+
+                                            //SQL query to select all subjects
+                                            $sql = "SELECT * FROM subjects";
+                                            $result = mysqli_query($connection, $sql);
+
+                                            if ($result) {
+                                                // Display subjects in dropdown
+                                                while ($row = mysqli_fetch_assoc($result)) {
+                                                    echo '<option value="' . $row['SubjectId'] . '">' . $row['SubjectName'] . '</option>';
                                                 }
+                                                mysqli_free_result($result);
+                                            } else {
+                                                echo "Error: " . mysqli_error($connection);
+                                            }
 
-                                                //SQL query select all subjects
-                                                $sql = "SELECT * FROM subjects";
-
-                                                $result = mysqli_query($connection, $sql);
-
-                                                if ($result) {
-                                                    //display subjects in dropdown
-                                                    while ($row = mysqli_fetch_assoc($result)) {
-                                                        echo '<option value="' . $row['SubjectId'] . '">' . $row['SubjectName'] . '</option>';
-                                                    }
-
-                                                    mysqli_free_result($result);
-                                                } else {
-                                                    echo "Error: " . mysqli_error($connection);
-                                                }
-
-                                                //close the database connection
-                                                mysqli_close($connection);
-                                                ?>
-                                            </select>
-                                        </td>
-                                    <tr>
-                                        <th colspan="2">Password</th>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Password :<br>
-                                            <input type="password" name="password" required>
-                                        </td>
-                                        <td>
-                                            Confirm Password :<br>
-                                            <input type="password" name="confirmPassword" required>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><button type="submit" class="btnStyle1 mx-2">Save</button></td>
-                                    </tr>
-                                    
-                                  </table>
-                            </form>
-                        </div>
+                                            //close the database connection
+                                            mysqli_close($connection);
+                                            ?>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2">Password</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Password:<br>
+                                        <input type="password" name="password" required>
+                                    </td>
+                                    <td>
+                                        Confirm Password:<br>
+                                        <input type="password" name="confirmPassword" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <button type="submit" class="btnStyle1 mx-2">Save</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
-
 
     <script src="js/Dashboard.js"></script>
     <!-- link Bootstap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

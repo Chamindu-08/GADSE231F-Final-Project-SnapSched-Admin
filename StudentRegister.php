@@ -25,34 +25,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $Password = $_POST['Password'];
     $confirmPassword = $_POST['confirmPassword'];
     
+    //initialize validation messages variable
+    $validationMessages = "";
+
     //check all fields are filled
     if (empty($firstName) || empty($lastName) || empty($surName) || empty($dob) || empty($address) || empty($email) || empty($guardianName) || empty($guardianContact) || empty($emergencyContact) || empty($Password) || empty($confirmPassword) || empty($grade) || empty($admissionDate)){
-        echo "<script>alert('Please fill all fields.');</script>";
-        exit();
+        $validationMessages .= "Please fill all fields. ";
     }
 
     //validate email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo "<script>alert('Invalid email format.');</script>";
-        exit();
-    }
-
-    //validate password and confirm password 8 characters long
-    if (strlen($Password) < 8 || strlen($confirmPassword) < 8) {
-        echo "<script>alert('Password must be at least 8 characters long.');</script>";
-        exit();
+        $validationMessages .= "Invalid email format. ";
     }
 
     //validate contact number
     if (!preg_match("/^[0-9]{10}+$/", $guardianContact) || !preg_match("/^[0-9]{10}+$/", $emergencyContact)) {
-        echo "<script>alert('Invalid contact number!');</script>";
-        exit();
+        $validationMessages .= "Invalid contact number! ";
+    }
+
+    //validate password at least 4 characters long
+    if (strlen($Password) < 4) {
+        $validationMessages .= "Admission number must be at least 4 characters long. ";
     }
 
     //confirm password and password match
     if ($Password != $confirmPassword) {
-        echo "<script>alert('Password and Confirm Password do not match. Please enter again.');</script>";
-        exit();
+        $validationMessages .= "Password and Confirm Password do not match. Please enter again. ";
     }
 
     //check if the student already exists
@@ -60,8 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $resultCheckStudent = mysqli_query($connection, $sqlCheckStudent);
 
     if (mysqli_num_rows($resultCheckStudent) > 0) {
-        echo "<script>alert('Student already exists.');</script>";
-        exit();
+        $validationMessages .= "Student already exists. ";
     }
 
     //check if the email already exists
@@ -69,20 +66,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $resultCheckEmail = mysqli_query($connection, $sqlCheckEmail);
 
     if (mysqli_num_rows($resultCheckEmail) > 0) {
-        echo "<script>alert('Email already exists.');</script>";
-        exit();
+        $validationMessages .= "Email already exists. ";
     }
 
+    //if there are validation errors, display them
+    if (!empty($validationMessages)) {
+        $validationMessages = '<div class="alert alert-danger">' . $validationMessages . '</div>';
+    } else {
+        //insert student details into the database
+        $sqlStudent = "INSERT INTO student (StudentId, FirstName, LastName, SurName, StudentAddress, DOB, AdmissionDate, StudentEmail, StudentPassword, Grade, StudentStatus) VALUES ('$admissionNo', '$firstName', '$lastName', '$surName', '$address', '$dob', '$admissionDate', '$email', '$Password', '$grade', 'yes')";
 
-    //insert student details into the database
-    $sqlStudent = "INSERT INTO student (StudentId, FirstName, LastName, SurName, StudentAddress, DOB, AdmissionDate, StudentEmail, StudentPassword, Grade) VALUES ('$admissionNo', '$firstName', '$lastName', '$surName', '$address', '$dob', '$admissionDate', '$email', '$Password', '$grade')";
+        //insert guardian details into the database
+        $sqlGuardian = "INSERT INTO currentStudent (StudentId, GuardianName, GuardianContactNo, EmergencyContactNo) VALUES ('$admissionNo', '$guardianName', '$guardianContact', '$emergencyContact')";
 
-    //insert guardian details into the database
-    $sqlGuardian = "INSERT INTO currentStudent (StudentId, GuardianName, GuardianContactNo, EmergencyContactNo) VALUES ('$admissionNo', '$guardianName', '$guardianContact', '$emergencyContact')";
+        //execute the queries
+        $resultStudent = mysqli_query($connection, $sqlStudent);
+        $resultGuardian = mysqli_query($connection, $sqlGuardian);
+
+        if ($resultStudent && $resultGuardian) {
+            echo "<script>alert('Student registered successfully.');</script>";
+
+            //send email to the student
+      /*    $to = $email;
+            $subject = "Welcome to the school";
+            $message = "Dear $firstName $lastName, \n\nWelcome to the school. Your admission number is $admissionNo. \n\nPlease use this $email and $Password to login to the system. \n\nThank you.";
+            $headers = "From: School Management System";
+
+            mail($to, $subject, $message, $headers); */
+
+        } else {
+            echo "<script>alert('Error registering student: " . mysqli_error($connection) . "');</script>";
+        }
+
+        //clear the form
+        $admissionNo = $firstName = $lastName = $surName = $dob = $address = $email = $grade = $admissionDate = $guardianName = $guardianContact = $emergencyContact = $Password = $confirmPassword = "";
+
+        //close the database connection
+        if (isset($connection)) {
+            mysqli_close($connection);
+        }
+
+        //redirect to the same page
+        header("Location: StudentRegister.php");
+    }
 }
 
 //close the database connection
-mysqli_close($connection);
+if (isset($connection)) {
+    mysqli_close($connection);
+}
 ?> 
 
 <!DOCTYPE html>
@@ -112,7 +144,8 @@ mysqli_close($connection);
                         </h4>
                     </div>
                     <div class="card-body">
-                        <form name="studentProUp" action="#" method="post">
+                        <?php echo $validationMessages; ?>
+                        <form name="studentProUp" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                             <table class="puTable">
                                 <tr>
                                     <th colspan="2">Student Details</th>

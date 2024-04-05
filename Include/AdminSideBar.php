@@ -31,6 +31,9 @@
                             <li class="sidebar-item">
                                 <a href="StudentRegister.php" class="sidebar-link">Student Register</a>
                             </li>
+                            <li class="sidebar-item">
+                                <a href="LeaveStudent.php" class="sidebar-link">Student Leave</a>
+                            </li>
                         </ul>
                     </li>
                     <li class="sidebar-item">
@@ -47,6 +50,12 @@
                             </li>
                             <li class="sidebar-item">
                                 <a href="TeacherRegister.php" class="sidebar-link">Teacher Register</a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="Absentism.php" class="sidebar-link">Teacher Absenteeism</a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="LeaveTeacher.php" class="sidebar-link">Teacher Leave</a>
                             </li>
                         </ul>
                     </li>
@@ -78,6 +87,12 @@
                                 <a href="AnnouncementDelete.php" class="sidebar-link">Delete Announcement</a>
                             </li>
                         </ul>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="Appointment.php" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">
+                            <img src="Images/absentism.png" style="width:15px;">
+                            Appoinment
+                        </a>
                     </li>
                     <li class="sidebar-item">
                         <a href="#" class="sidebar-link collapsed" data-bs-target="#posts" data-bs-toggle="collapse"
