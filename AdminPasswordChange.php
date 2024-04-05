@@ -1,30 +1,32 @@
 <?php
-//get database connection
+// Include database connection
 include 'DBConnection/DBConnection.php';
 
-//check connection
+// Check database connection
 if (!$connection) {
-    echo "Connection failed";
+    echo "<script>alert('Connection failed');</script>";
 }
 
-//check if the form is submitted
+// Error message variable
+$errorMessage = "";
+
+// Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    //retrieve form data
+    // Retrieve form data
     $currentPassword = $_POST['currentPassword'];
     $newPassword = $_POST['newPassword'];
     $confirmPassword = $_POST['confirmPassword'];
     
-    //check if newPassword or confirmPassword is empty and currentPassword is not empty
+    // Check if newPassword or confirmPassword is empty and currentPassword is not empty
     if (!empty($newPassword) || !empty($confirmPassword)) {
         if (empty($currentPassword)) {
-            echo "<script>alert('Please enter your current password.');</script>";
+            $errorMessage = "Please enter current password.";
         } else {
-            
-            //check if the cookie is set
-            if(isset($_COOKIE['adminEmail'])){
+            // Check if the cookie is set
+            if (isset($_COOKIE['adminEmail'])) {
                 $adminEmail = $_COOKIE['adminEmail'];
             } else {
-                //redirect to login page
+                // Redirect to login page
                 echo '<script>
                         var confirmMsg = confirm("Your session has timed out. Please log in again.");
                         if (confirmMsg) {
@@ -34,47 +36,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 exit();
             }
 
-            //vlaidate new password and confirm password 8 characters long
+            // Validate new password and confirm password (minimum 8 characters)
             if (strlen($newPassword) < 8 || strlen($confirmPassword) < 8) {
-                echo "<script>alert('Password must be at least 8 characters long.');</script>";
-                exit();
-            }
-            
-            //verify current password
-            $sqlVerifyPassword = "SELECT OSPassword FROM otherStaff WHERE OSEmail='$adminEmail'";
-            $resultVerifyPassword = mysqli_query($connection, $sqlVerifyPassword);
+                $errorMessage = "Password must be at least 8 characters long.";
+            } else {
+                // Verify current password
+                $sqlVerifyPassword = "SELECT OSPassword FROM otherStaff WHERE OSEmail='$adminEmail'";
+                $resultVerifyPassword = mysqli_query($connection, $sqlVerifyPassword);
 
-            if (mysqli_num_rows($resultVerifyPassword) > 0) {
-                $rowPassword = mysqli_fetch_assoc($resultVerifyPassword);
-                $storedPassword = $rowPassword['OSPassword'];
+                if ($resultVerifyPassword) {
+                    $rowPassword = mysqli_fetch_assoc($resultVerifyPassword);
+                    $storedPassword = $rowPassword['OSPassword'];
 
-                //check if current password matches stored password
-                if ($currentPassword != $storedPassword) {
-                    echo "<script>alert('Incorrect current password.');</script>";
-                } else {
-                    //check if newPassword and confirmPassword match
-                    if ($newPassword != $confirmPassword) {
-                        echo "<script>alert('Password and Confirm Password do not match. Please enter again.');</script>";
+                    // Check if current password matches stored password
+                    if ($currentPassword != $storedPassword) {
+                        $errorMessage = "Current password is incorrect. Please enter again.";
                     } else {
-                        //update student table with new password
-                        $sqlUpdatePassword = "UPDATE otherstaff SET OSPassword='$newPassword' WHERE OSEmail='$adminEmail'";
-                
-                        $result = mysqli_query($connection, $sqlUpdatePassword);
-
-                        if ($result) {
-                            echo "<script>alert('Password updated successfully');</script>";
+                        // Check if newPassword and confirmPassword match
+                        if ($newPassword != $confirmPassword) {
+                            $errorMessage = "New password and confirm password do not match. Please enter again.";
                         } else {
-                            echo "<script>alert('Error updating student password: " . mysqli_error($connection) . "');</script>";
+                            // Update otherstaff table with new password
+                            $sqlUpdatePassword = "UPDATE otherstaff SET OSPassword='$newPassword' WHERE OSEmail='$adminEmail'";
+                
+                            $result = mysqli_query($connection, $sqlUpdatePassword);
+
+                            if ($result) {
+                                echo "<script>alert('Password updated successfully');</script>";
+                            } else {
+                                $errorMessage = "Error updating student password: " . mysqli_error($connection);
+                            }
                         }
                     }
+                } else {
+                    $errorMessage = "Error verifying current password: " . mysqli_error($connection);
                 }
-            } else {
-                echo "<script>alert('Error verifying current password: " . mysqli_error($connection) . "');</script>";
             }
         }
     } else {
-        //no password update requested
-        echo "<script>alert('No changes made to password.');</script>";
+        // No password update requested
+        $errorMessage = "No changes made to password.";
     }
 }
 
@@ -89,10 +90,10 @@ mysqli_close($connection);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Update | Admin</title>
 
-    <!-- stylesheet -->
-    <link rel="stylesheet" href="CSS/Dashboard.css" />
-    <link rel="stylesheet" href="CSS/style.css" />
-    <!-- Bootstap link -->
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="CSS/Dashboard.css">
+    <link rel="stylesheet" href="CSS/style.css">
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -101,7 +102,7 @@ mysqli_close($connection);
             
         <main class="content px-3 py-2">
             <div class="container-fluid">
-                <!-- Table Element -->
+                <!-- Form -->
                 <div class="card border-0">
                     <div class="card-header">
                         <h4 class="card-title">
@@ -114,6 +115,12 @@ mysqli_close($connection);
                                 <tr>
                                     <th colspan="2">Password</th>
                                 </tr>
+                                <!-- Error Message -->
+                                <?php if (!empty($errorMessage)) : ?>
+                                    <div class="alert alert-danger" role="alert">
+                                        <?php echo $errorMessage; ?>
+                                    </div>
+                                <?php endif; ?>
                                 <tr>
                                     <td>
                                         Current Password :<br>
@@ -137,14 +144,16 @@ mysqli_close($connection);
                                 </tr>
                             </table>
                         </form>
+
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- JavaScript -->
     <script src="js/Dashboard.js"></script>
-    <!-- link Bootstap -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

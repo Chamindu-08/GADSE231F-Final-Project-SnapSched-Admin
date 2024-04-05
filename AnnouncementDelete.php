@@ -7,6 +7,20 @@ if (!$connection) {
     echo "Database connection failed. Please try again later.";
 }
 
+//check if the cookie is set
+if (isset($_COOKIE['adminEmail'])) {
+    $adminEmail = $_COOKIE['adminEmail'];
+} else {
+    //redirect to login page
+    echo '<script>
+            var confirmMsg = confirm("Your session has timed out. Please log in again.");
+            if (confirmMsg) {
+                window.location.href = "AdminLoginRegister.php";
+            }
+        </script>';
+    exit();
+}
+
 //check if the form is submitted
 if (isset($_POST['date'], $_POST['announcement_id'])) {
     //get the form data

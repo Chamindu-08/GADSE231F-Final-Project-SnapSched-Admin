@@ -7,6 +7,20 @@ if (!$connection) {
     echo "<script>alert('Database connection failed.');</script>";
 }
 
+//check if the cookie is set
+if (isset($_COOKIE['adminEmail'])) {
+    $adminEmail = $_COOKIE['adminEmail'];
+} else {
+    //redirect to login page
+    echo '<script>
+            var confirmMsg = confirm("Your session has timed out. Please log in again.");
+            if (confirmMsg) {
+                window.location.href = "AdminLoginRegister.php";
+            }
+        </script>';
+    exit();
+}
+
 //get the teacher ID from the query parameter
 $teacherId = $_GET['teacherId'] ?? '';
 
@@ -143,11 +157,11 @@ if (isset($_POST['submit'])) {
                                 //fetch available relief teachers
                                 $query = "SELECT TeacherId, CONCAT(FirstName, ' ', LastName) AS TeacherName 
                                             FROM teacher 
-                                            WHERE TeacherId NOT IN (
+                                            WHERE TeacherId  NOT IN (
                                                 SELECT TeacherId 
                                                 FROM teaching 
                                                 WHERE Period = '$period' AND DayOfWeek = '$weekdayName'
-                                            )";
+                                            ) AND TeacherStatus = 'Active'";
 
                                 //execute the query
                                 $reliefResult = mysqli_query($connection, $query);

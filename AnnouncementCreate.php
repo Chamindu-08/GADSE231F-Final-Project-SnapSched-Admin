@@ -1,18 +1,35 @@
 <?php
+
+//check if the cookie is set
+if (isset($_COOKIE['adminEmail'])) {
+    $adminEmail = $_COOKIE['adminEmail'];
+} else {
+    //redirect to login page
+    echo '<script>
+            var confirmMsg = confirm("Your session has timed out. Please log in again.");
+            if (confirmMsg) {
+                window.location.href = "AdminLoginRegister.php";
+            }
+        </script>';
+    exit();
+}
+
 if(isset($_POST["date"], $_POST["announcement"])) {
     //get the form data
     $Date = $_POST["date"];
     $Subject = $_POST["subject"];
     $Announcement = $_POST["announcement"];
 
+    //error message variable
+    $errorMessage = "";
 
     // Check if teacher is set, if not, set it to empty string
     $Student = isset($_POST["student"]) ? $_POST["student"] : "";
     $Teacher = isset($_POST["teacher"]) ? $_POST["teacher"] : ""; 
 
     //validate fields
-    if (empty($Date) || empty($Announcement) || empty($Subject) || (empty($Student) && empty($Teacher))) {
-        echo "<script>alert('All fields are required.');</script>";
+    if (empty($Date) || empty($Announcement) || empty($Subject)) {
+        $errorMessage = "Please fill in all the fields.";
     } else {
         //include database connection
         include 'DBConnection/DBConnection.php';
@@ -22,6 +39,8 @@ if(isset($_POST["date"], $_POST["announcement"])) {
             echo "Database connection failed. Please try again later.";
         }
 
+        $errorMessage = "";
+
         //determine the recipient
         if (!empty($Student) && !empty($Teacher)) {
             $Recipient = 'both';
@@ -30,34 +49,35 @@ if(isset($_POST["date"], $_POST["announcement"])) {
         } elseif (!empty($Teacher)) {
             $Recipient = 'teacher';
         } else {
-            echo "<script>alert('Please select the recipient.');</script>";
-            exit();
+            $errorMessage = "Please select the recipient.";
         }
 
-        //get the latest AbsentId from the database to determine the next ID
-        $SQLAnnouncement = "SELECT * FROM announcement";
-        $result = mysqli_query($connection, $SQLAnnouncement);
+        if (empty($errorMessage)) {
+            //get the latest AbsentId from the database to determine the next ID
+            $SQLAnnouncement = "SELECT * FROM announcement";
+            $result = mysqli_query($connection, $SQLAnnouncement);
 
-        if ($row = mysqli_fetch_assoc($result)) {
-            $lastAnnouncementId = $row['AnnouncementId'];
-            $lastNumber = intval(substr($lastAnnouncementId, 1));
-            $nextNumber = $lastNumber + 1;
-            $nextAnnouncementId = 'A' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-        } else {
-            //default value for the first record
-            $nextAnnouncementId = 'A001';
-        }
+            if ($row = mysqli_fetch_assoc($result)) {
+                $lastAnnouncementId = $row['AnnouncementId'];
+                $lastNumber = intval(substr($lastAnnouncementId, 1));
+                $nextNumber = $lastNumber + 1;
+                $nextAnnouncementId = 'A' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+            } else {
+                //default value for the first record
+                $nextAnnouncementId = 'A001';
+            }
 
-        //insert data into the database
-        $sql = "INSERT INTO announcement (AnnouncementId, Subject, Announcement, Recipient, AnnouncementDate) VALUES ('$nextAnnouncementId','$Subject', '$Announcement','$Recipient', '$Date')";
+            //insert data into the database
+            $sql = "INSERT INTO announcement (AnnouncementId, Subject, Announcement, Recipient, AnnouncementDate) VALUES ('$nextAnnouncementId','$Subject', '$Announcement','$Recipient', '$Date')";
 
-        //execute the query
-        $result = mysqli_query($connection, $sql);
+            //execute the query
+            $result = mysqli_query($connection, $sql);
 
-        if ($result) {
-            echo "<script>alert('Successful.');</script>";
-        } else {
-            echo "<script>alert('Error: " . $sql . "<br>" . mysqli_error($connection) . "');</script>";
+            if ($result) {
+                echo "<script>alert('Announcement created successfully.');</script>";
+            } else {
+                echo "<script>alert('Error: " . $sql . "<br>" . mysqli_error($connection) . "');</script>";
+            }
         }
 
         //close the database connection
@@ -94,6 +114,11 @@ if(isset($_POST["date"], $_POST["announcement"])) {
                             Announcement
                         </h4>
                     </div>
+                    <?php if (!empty($errorMessage)) : ?>
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo $errorMessage; ?>
+                        </div>
+                    <?php endif; ?>
                     <div class="card-body table-responsive">
                         <form name="teacherProUp" action="#" method="post">
                             <table class="profileStyle">

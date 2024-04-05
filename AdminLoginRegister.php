@@ -22,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $password = $_POST["password"];
         $confirmPassword = $_POST["confirmPassword"];
 
-
 		if($confirmId != "1234"){
 			echo "<script>alert('Invalid Confirmation ID!');</script>";
 		}
@@ -39,13 +38,19 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 				if (mysqli_num_rows($result) > 0) {
 					echo "<script>alert('Email already exists!');</script>";
 				} else {
+					
 					//validate contact number
 					if (!preg_match("/^[0-9]{10}+$/", $contactNo)) {
-						echo "<script>alert('Invalid contact number!');</script>";
+						echo "<script>alert('Invalid Contact Number!');</script>";
 					}
 
-					//validate NIC 12 or 10 characters long
-					if (strlen($nic) != 12 && strlen($nic) != 10) {
+					//validate if nic in 12 characters only numbers
+					if (strlen($nic) == 12 && !preg_match("/^[0-9]+$/", $nic)) {
+						echo "<script>alert('Invalid NIC!');</script>";
+					}
+
+					//validate if nic in 10 characters only 9 numbers and last character is V or v
+					if (strlen($nic) == 10 && !preg_match("/^[0-9]{9}[Vv]$/", $nic)) {
 						echo "<script>alert('Invalid NIC!');</script>";
 					}
 
@@ -111,6 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $username = $_POST["loginEmail"];
         $password = $_POST["loginPassword"];
 
+		$loginError = "";
+
         $sql = "SELECT * FROM otherStaff WHERE OSEmail='$username' AND OSPassword='$password'";
         $result = mysqli_query($connection, $sql);
 
@@ -125,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             header("Location: AdminDashBoard.php");
             exit();
         } else {
-            echo "<script>alert('Invalid username or password!');</script>";
+            $loginError = "Invalid username or password!";
         }
     }
 }
@@ -338,6 +345,12 @@ body{
 		<div class="form-container sign-in">
 			<form id="signinForm" method="post" action="#">
 				<h1>Sign In</h1>
+				<!-- Error Message -->
+				<?php if ($loginError != "") : ?>
+					<div class="alert alert-danger" role="alert">
+						<?php echo $loginError; ?>
+					</div>
+				<?php endif; ?>
 				<input type="email" name="loginEmail" placeholder="E-Mail" required>
 				<input type="password" name="loginPassword" placeholder="Password" required>
 				<a href="#">Forget Password?</a>

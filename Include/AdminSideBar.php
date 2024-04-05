@@ -1,3 +1,50 @@
+<?php
+// Include database connection
+include 'DBConnection/DBConnection.php';
+
+// Check database connection
+if (!$connection) {
+    echo "<script>alert('Connection failed');</script>";
+}
+
+//set the cookie
+if (isset($_COOKIE['adminEmail'])) {
+    $adminEmail = $_COOKIE['adminEmail'];
+} else {
+    //redirect to login page
+    echo '<script>
+            var confirmMsg = confirm("Your session has timed out. Please log in again.");
+            if (confirmMsg) {
+                window.location.href = "AdminLoginRegister.php";
+            }
+        </script>';
+    exit();
+}
+
+//initialize variables to store retrieved values
+$first_name = "";
+$last_name = "";
+
+// SQL query to retrieve admin information
+$sql = "SELECT * FROM otherStaff WHERE OSEmail = '$adminEmail'";
+
+$result = mysqli_query($connection, $sql);
+
+if ($result === false) {
+    die("Error executing the query: " . $connection->error);
+}
+
+if ($result->num_rows > 0) {
+    // output data of the first row (assuming only one admin is retrieved)
+    $row = $result->fetch_assoc();
+    $first_name = $row["FirstName"];
+    $last_name = $row["LastName"];
+}
+
+//close the connection
+mysqli_close($connection);
+?>
+
 <div class="wrapper">
         <aside id="sidebar" class="js-sidebar">
             <!-- content for sidebar -->
@@ -138,7 +185,7 @@
                         <img id="btnsearch" src="images/search.png" alt="Search" style="width:15px;">
                     </button>
                 </form>
-                <label style="margin-left: 10px; margin-right: 10px;">Induwara D C I</label>
+                <label style="margin-left: 10px; margin-right: 10px;"><?php echo $first_name . ' ' . $last_name; ?></label>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">

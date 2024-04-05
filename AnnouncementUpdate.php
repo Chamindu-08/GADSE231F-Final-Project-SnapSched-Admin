@@ -7,6 +7,23 @@ if (!$connection) {
     echo "Database connection failed. Please try again later.";
 }
 
+//check if the cookie is set
+if (isset($_COOKIE['adminEmail'])) {
+    $adminEmail = $_COOKIE['adminEmail'];
+} else {
+    //redirect to login page
+    echo '<script>
+            var confirmMsg = confirm("Your session has timed out. Please log in again.");
+            if (confirmMsg) {
+                window.location.href = "AdminLoginRegister.php";
+            }
+        </script>';
+    exit();
+}
+
+//error message variable
+$errorMessage = "";
+
 //check if the form is submitted
 if (isset($_POST['date'], $_POST['announcement_id'])) {
     //get the form data
@@ -15,13 +32,15 @@ if (isset($_POST['date'], $_POST['announcement_id'])) {
     $announcement = $_POST['announcement'];
     $announcement_id = $_POST['announcement_id'];
 
+    $errorMessage = "";
+
     // Check if teacher is set, if not, set it to empty string
     $student = isset($_POST['student']) ? $_POST['student'] : '';
     $teacher = isset($_POST['teacher']) ? $_POST['teacher'] : '';
 
     //validate fields
-    if (empty($date) || empty($announcement) || empty($subject) || (empty($student) && empty($teacher))) {
-        echo "<script>alert('All fields are required.');</script>";
+    if (empty($date) || empty($announcement) || empty($subject)) {
+        $errorMessage = "Please fill in all the fields.";
     } else {
         //determine the recipient
         if (!empty($student) && !empty($teacher)) {
@@ -31,20 +50,22 @@ if (isset($_POST['date'], $_POST['announcement_id'])) {
         } elseif (!empty($teacher)) {
             $recipient = 'teacher';
         } else {
-            echo "<script>alert('Please select the recipient.');</script>";
-            exit();
+            $errorMessage = "Please select the recipient.";
         }
 
-        //update data into the database
-        $sql = "UPDATE announcement SET Subject = '$subject', Announcement = '$announcement', Recipient = '$recipient', AnnouncementDate = '$date' WHERE AnnouncementId = '$announcement_id'";
+        if (empty($errorMessage)) {
 
-        //execute the query
-        $result = mysqli_query($connection, $sql);
+            //update data into the database
+            $sql = "UPDATE announcement SET Subject = '$subject', Announcement = '$announcement', Recipient = '$recipient', AnnouncementDate = '$date' WHERE AnnouncementId = '$announcement_id'";
 
-        if ($result) {
-            echo "<script>alert('Successful.');</script>";
-        } else {
-            echo "<script>alert('Error: " . $sql . "<br>" . mysqli_error($connection) . "');</script>";
+            //execute the query
+            $result = mysqli_query($connection, $sql);
+
+            if ($result) {
+                echo "<script>alert('Announcement updated successfully.');</script>";
+            } else {
+                echo "<script>alert('Error: " . $sql . "<br>" . mysqli_error($connection) . "');</script>";
+            }
         }
     }
 }
@@ -77,6 +98,11 @@ if (isset($_POST['date'], $_POST['announcement_id'])) {
                             Announcement
                         </h4>
                     </div>
+                    <?php if (!empty($errorMessage)) : ?>
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo $errorMessage; ?>
+                        </div>
+                    <?php endif; ?>
                     <!-- select announcement to update form database load to combo box-->
                     <div class="card-body table-responsive">
                         <form name="teacherProUp" action="#" method="post">

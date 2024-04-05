@@ -7,6 +7,20 @@ if (!$connection) {
     echo "Connection failed";
 }
 
+//check if the cookie is set
+if (isset($_COOKIE['adminEmail'])) {
+    $adminEmail = $_COOKIE['adminEmail'];
+} else {
+    //redirect to login page
+    echo '<script>
+            var confirmMsg = confirm("Your session has timed out. Please log in again.");
+            if (confirmMsg) {
+                window.location.href = "AdminLoginRegister.php";
+            }
+        </script>';
+    exit();
+}
+
 // Initialize variables to store retrieved values
 $first_name = "";
 $last_name = "";

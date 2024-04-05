@@ -7,6 +7,23 @@ if (!$connection) {
     echo "Connection failed";
 }
 
+//check if the cookie is set
+if (isset($_COOKIE['adminEmail'])) {
+    $adminEmail = $_COOKIE['adminEmail'];
+} else {
+    //redirect to login page
+    echo '<script>
+            var confirmMsg = confirm("Your session has timed out. Please log in again.");
+            if (confirmMsg) {
+                window.location.href = "AdminLoginRegister.php";
+            }
+        </script>';
+    exit();
+}
+
+//error message variable
+$errorMessage = "";
+
 //check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve form data
@@ -23,6 +40,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $newPassword = $_POST['new_password'];
     $confirmPassword = $_POST['confirm_password'];
     
+    //error message variable
+    $errorMessage = "";
+
     //check if the cookie is set
     if(isset($_COOKIE['adminEmail'])){
         $adminEmail = $_COOKIE['adminEmail'];
@@ -40,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //check if newPassword or confirmPassword is empty and currentPassword is not empty
     if (!empty($newPassword) || !empty($confirmPassword)) {
         if (empty($currentPassword)) {
-            echo "<script>alert('Current Password is required.');</script>";
+            $errorMessage = "Please enter current password.";
         } else {
             //verify current password
             $sqlVerifyPassword = "SELECT OSPassword FROM otherStaff WHERE OSEmail='$adminEmail'";
@@ -51,44 +71,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $storedPassword = $rowPassword['OSPassword'];
 
                 if ($currentPassword != $storedPassword) {
-                    echo "<script>alert('Incorrect current password.');</script>";
+                    $errorMessage = "Current password is incorrect. Please enter again.";
                 } else {
                     //check if newPassword and confirmPassword match
                     if ($newPassword != $confirmPassword) {
-                        echo "<script>alert('Password and Confirm Password do not match. Please enter again.');</script>";
+                        $errorMessage = "New password and confirm password do not match. Please enter again.";
                     } else {
                         //validate new password and confirm password 8 characters long
                         if (strlen($newPassword) < 8 || strlen($confirmPassword) < 8) {
-                            echo "<script>alert('Password must be at least 8 characters long.');</script>";
-                            exit();
+                            $errorMessage = "Password must be at least 8 characters long.";
                         }
 
                         //validate email
                         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                            echo "<script>alert('Invalid email format.');</script>";
-                            exit();
+                            $errorMessage = "Invalid email format.";
                         }
+
+                        //validate is new enter email is not equal to current email
+                        if ($email != $adminEmail) {
+                            //validate email exist in the database
+                            $sqlEmail = "SELECT OSEmail FROM otherStaff WHERE OSEmail='$email'";
+                            $resultEmail = mysqli_query($connection, $sqlEmail);
+
+                            if (mysqli_num_rows($resultEmail) > 0) {
+                                $errorMessage = "Email already exists.";
+                            }
+                        } 
 
                         //validate contact number
                         if (!preg_match("/^[0-9]{10}$/", $contactNo)) {
-                            echo "<script>alert('Invalid contact number.');</script>";
-                            exit();
+                            $errorMessage = "Invalid contact number.";
                         }
 
-                        //validate NIC 12 or 10 characters long
-                        if (strlen($nic) != 12 && strlen($nic) != 10) {
-                            echo "<script>alert('Invalid NIC.');</script>";
-                            exit();
+                        //validate if nic in 12 characters only numbers
+                        if (strlen($nic) == 12 && !preg_match("/^[0-9]+$/", $nic)) {
+                            $errorMessage = "Invalid NIC.";
                         }
 
-                        //update teacher table with password change
-                        $sqlAdmin = "UPDATE otherStaff SET FirstName='$firstName', LastName='$lastName', SurName='$surName', OSAddress='$address', OSEmail='$email', NIC='$nic', OSContactNo='$contactNo', AssumeDate='$assumeDate', Designation='$designation', OSPassword='$newPassword' WHERE OSEmail='$adminEmail'";
+                        //validate if nic in 10 characters only 9 numbers and last character is V or v
+                        if (strlen($nic) == 10 && !preg_match("/^[0-9]{9}[Vv]$/", $nic)) {
+                            $errorMessage = "Invalid NIC.";
+                        }
 
-                        if (mysqli_query($connection, $sqlAdmin)) {
-                            echo "<script>alert('Record updated successfully');</script>";
-
-                        } else {
-                            echo "<script>alert('Error updating record: " . mysqli_error($connection) . "');</script>";
+                        if (empty($errorMessage)) {
+                            //update teacher table with password change
+                            $sqlAdmin = "UPDATE otherStaff SET FirstName='$firstName', LastName='$lastName', SurName='$surName', OSAddress='$address', OSEmail='$email', NIC='$nic', OSContactNo='$contactNo', AssumeDate='$assumeDate', Designation='$designation', OSPassword='$newPassword' WHERE OSEmail='$adminEmail'";
+                            
+                            if (mysqli_query($connection, $sqlAdmin)) {
+                                echo "<script>alert('Record updated successfully');</script>";
+                            } else {
+                                echo "<script>alert('Error updating record: " . mysqli_error($connection) . "');</script>";
+                            }
                         }
                     }
                 }
@@ -97,6 +130,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     } else {
+        //validate new password and confirm password 8 characters long
+        if (strlen($newPassword) < 8 || strlen($confirmPassword) < 8) {
+            $errorMessage = "Password must be at least 8 characters long.";
+        }
+
+        //validate email
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errorMessage = "Invalid email format.";
+        }
+
+        //validate is new enter email is not equal to current email
+        if ($email != $adminEmail) {
+            //validate email exist in the database
+            $sqlEmail = "SELECT OSEmail FROM otherStaff WHERE OSEmail='$email'";
+            $resultEmail = mysqli_query($connection, $sqlEmail);
+
+            if (mysqli_num_rows($resultEmail) > 0) {
+                $errorMessage = "Email already exists.";
+            }
+        } 
+
+        //validate contact number
+        if (!preg_match("/^[0-9]{10}$/", $contactNo)) {
+            $errorMessage = "Invalid contact number.";
+        }
+
+        //validate if nic in 12 characters only numbers
+        if (strlen($nic) == 12 && !preg_match("/^[0-9]+$/", $nic)) {
+            $errorMessage = "Invalid NIC.";
+        }
+
+        //validate if nic in 10 characters only 9 numbers and last character is V or v
+        if (strlen($nic) == 10 && !preg_match("/^[0-9]{9}[Vv]$/", $nic)) {
+            $errorMessage = "Invalid NIC.";
+        }
+
         //update teacher table without password change
         $sqlAdmin = "UPDATE otherStaff SET FirstName='$firstName', LastName='$lastName', SurName='$surName', OSAddress='$address', OSEmail='$email', NIC='$nic', OSContactNo='$contactNo', AssumeDate='$assumeDate', Designation='$designation' WHERE OSEmail='$adminEmail'";
         
@@ -173,6 +242,13 @@ mysqli_close($connection);
                         </div>
                         <div class="card-body">
                             <form name="teacherProUp" action="#" method="post">
+                                <!-- Error Message -->
+                                <?php if (!empty($errorMessage)) : ?>
+                                    <div class="alert alert-danger" role="alert">
+                                        <?php echo $errorMessage; ?>
+                                    </div>
+                                <?php endif; ?>
+
                                 <table class="puTable">
                                     <tr>
                                         <th colspan="2">Personal Details</th>

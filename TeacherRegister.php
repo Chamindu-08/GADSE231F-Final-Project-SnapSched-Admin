@@ -10,6 +10,20 @@ if (!$connection) {
 //initialize validation messages variable
 $validationMessages = "";
 
+//check if the cookie is set
+if (isset($_COOKIE['adminEmail'])) {
+    $adminEmail = $_COOKIE['adminEmail'];
+} else {
+    //redirect to login page
+    echo '<script>
+            var confirmMsg = confirm("Your session has timed out. Please log in again.");
+            if (confirmMsg) {
+                window.location.href = "AdminLoginRegister.php";
+            }
+        </script>';
+    exit();
+}
+
 //check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //retrieve form data
@@ -41,8 +55,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $validationMessages .= "Invalid contact number. ";
     }
 
-    //validate NIC 12 or 10 characters long
-    if (strlen($nic) != 12 && strlen($nic) != 10) {
+    //validate if nic in 12 characters only numbers
+    if (strlen($nic) == 12 && !preg_match("/^[0-9]+$/", $nic)) {
+        $validationMessages .= "Invalid NIC. ";
+    }
+
+    //validate if nic in 10 characters only 9 numbers and last character is V or v
+    if (strlen($nic) == 10 && !preg_match("/^[0-9]{9}[Vv]$/", $nic)) {
         $validationMessages .= "Invalid NIC. ";
     }
 
