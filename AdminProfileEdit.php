@@ -82,9 +82,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $errorMessage = "Password must be at least 8 characters long.";
                         }
 
-                        //validate email
-                        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                            $errorMessage = "Invalid email format.";
+                        //validate new password at least one uppercase letter, one lowercase letter, one number and one special character
+                        if (!preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/", $newPassword)) {
+                            $errorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character.";
+                        }
+
+                        // Validate email last @gmail.com
+                        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || substr($email, -10) !== "@gmail.com") {
+                            $errorMessage = "Invalid email format or not a Gmail address.";
                         }
 
                         //validate is new enter email is not equal to current email
@@ -103,13 +108,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $errorMessage = "Invalid contact number.";
                         }
 
-                        //validate if nic in 12 characters only numbers
-                        if (strlen($nic) == 12 && !preg_match("/^[0-9]+$/", $nic)) {
-                            $errorMessage = "Invalid NIC.";
-                        }
-
-                        //validate if nic in 10 characters only 9 numbers and last character is V or v
-                        if (strlen($nic) == 10 && !preg_match("/^[0-9]{9}[Vv]$/", $nic)) {
+                        //validate nic 12 or 10 characters
+                        if ((strlen($nic) != 12 && strlen($nic) != 10) || (strlen($nic) == 12 && !preg_match("/^[0-9]+$/", $nic)) || (strlen($nic) == 10 && !preg_match("/^[0-9]{9}[Vv]$/", $nic))) {
                             $errorMessage = "Invalid NIC.";
                         }
 
@@ -130,14 +130,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     } else {
-        //validate new password and confirm password 8 characters long
-        if (strlen($newPassword) < 8 || strlen($confirmPassword) < 8) {
-            $errorMessage = "Password must be at least 8 characters long.";
-        }
 
-        //validate email
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errorMessage = "Invalid email format.";
+        // Validate email last @gmail.com
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || substr($email, -10) !== "@gmail.com") {
+            $errorMessage = "Invalid email format or not a Gmail address.";
         }
 
         //validate is new enter email is not equal to current email
@@ -156,16 +152,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errorMessage = "Invalid contact number.";
         }
 
-        //validate if nic in 12 characters only numbers
-        if (strlen($nic) == 12 && !preg_match("/^[0-9]+$/", $nic)) {
+        //validate nic 12 or 10 characters
+        if ((strlen($nic) != 12 && strlen($nic) != 10) || (strlen($nic) == 12 && !preg_match("/^[0-9]+$/", $nic)) || (strlen($nic) == 10 && !preg_match("/^[0-9]{9}[Vv]$/", $nic))) {
             $errorMessage = "Invalid NIC.";
         }
 
-        //validate if nic in 10 characters only 9 numbers and last character is V or v
-        if (strlen($nic) == 10 && !preg_match("/^[0-9]{9}[Vv]$/", $nic)) {
-            $errorMessage = "Invalid NIC.";
-        }
-
+        if (empty($errorMessage)) {
         //update teacher table without password change
         $sqlAdmin = "UPDATE otherStaff SET FirstName='$firstName', LastName='$lastName', SurName='$surName', OSAddress='$address', OSEmail='$email', NIC='$nic', OSContactNo='$contactNo', AssumeDate='$assumeDate', Designation='$designation' WHERE OSEmail='$adminEmail'";
         
@@ -174,6 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             echo "<script>alert('Error updating record: " . mysqli_error($connection) . "');</script>";
         }
+    }
     }
 }
 

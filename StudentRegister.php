@@ -51,9 +51,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $validationMessages .= "Please fill all fields. ";
     }
 
-    //validate email
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $validationMessages .= "Invalid email format. ";
+    // Validate email last @gmail.com
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || substr($email, -10) !== "@gmail.com") {
+        $errorMessage = "Invalid email format or not a Gmail address.";
     }
 
     //validate contact number

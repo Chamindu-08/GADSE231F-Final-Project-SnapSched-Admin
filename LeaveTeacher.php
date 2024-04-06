@@ -133,11 +133,10 @@ if (isset($connection)) {
                                 <div class="col">
                                     <div class="p-3 m-1">
                                         <form id="formStudentSearch" method="post" action="#">
-                                            <table>
-                                                <tr>
-                                                    <td>Teacher</td>
-                                                    <td>
-                                                        <?php
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="teacherSelect" class="form-label">Select Teacher</label>
+                                                    <?php
                                                         //database connection
                                                         include 'DBConnection/DBConnection.php';
 
@@ -163,12 +162,9 @@ if (isset($connection)) {
                                                         //close the database connection
                                                         mysqli_close($connection);
                                                         ?>
-                                                    </td>
-                                                    <td>
-                                                        <button id="secondSearchBtn" class="btnStyle1 mx-2" type="submit" name="submit">Search</button>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                                </div>
+                                            </div>
+                                            <button id="secondSearchBtn" class="btnStyle1 mx-2" type="submit" name="submit">Search</button>
                                         </form>
                                     </div>
                                 </div>
@@ -192,42 +188,42 @@ if (isset($connection)) {
                                     <div class="row d-flex align-items-start">
                                         <!-- display student details and leave form , leave student button -->
                                         <form id="formLeaveStudent" method="post" action="#">
-                                            <table width="100%">
+                                            <table class="puTable">
                                                 <tr>
                                                     <td>
-                                                    Teacher ID : </td>
-                                                    <td><input type="text" name="teacherId" value="<?php echo $teacherId; ?>" readonly></td>
+                                                    Teacher ID : </br>
+                                                    <input type="text" name="teacherId" value="<?php echo $teacherId; ?>" readonly></td>
                                                     <td>
-                                                    First Name : </td>
-                                                    <td><input type="text" name="firstName" value="<?php echo $first_name; ?>" readonly></td>
+                                                    First Name : </br>
+                                                    <input type="text" name="firstName" value="<?php echo $first_name; ?>" readonly></td>
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                    Last Name : </td>
-                                                    <td><input type="text" name="lastName" value="<?php echo $last_name; ?>" readonly></td>
+                                                    Last Name : </br>
+                                                    <input type="text" name="lastName" value="<?php echo $last_name; ?>" readonly></td>
                                                     <td>
-                                                    Sure Name : </td>
-                                                    <td><input type="text" name="sureName" value="<?php echo $sure_name; ?>" readonly></td>
+                                                    Sure Name : </br>
+                                                    <input type="text" name="sureName" value="<?php echo $sure_name; ?>" readonly></td>
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                    Assume Date : </td>
-                                                    <td><input type="text" name="admissionDate" value="<?php echo $assume_date; ?>" readonly></td>
+                                                    Assume Date : </br>
+                                                    <input type="text" name="admissionDate" value="<?php echo $assume_date; ?>" readonly></td>
                                                     <td>
-                                                    Address : </td>
-                                                    <td><input type="text" name="address" value="<?php echo $address; ?>" readonly></td>
+                                                    Address : </br>
+                                                    <input type="text" name="address" value="<?php echo $address; ?>" readonly></td>
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                    Email : </td>
-                                                    <td><input type="text" name="email" value="<?php echo $email; ?>" readonly></td>
+                                                    Email : </br>
+                                                    <input type="text" name="email" value="<?php echo $email; ?>" readonly></td>
                                                     <td>
-                                                    Contact No : </td>
-                                                    <td><input type="text" name="contactNo" value="<?php echo $contact_no; ?>" readonly></td>
+                                                    Contact No : </br>
+                                                    <input type="text" name="contactNo" value="<?php echo $contact_no; ?>" readonly></td>
                                                 </tr>
                                                 <tr>
-                                                    <td>NIC : </td>
-                                                    <td><input type="text" name="nic" value="<?php echo $nic; ?>" readonly></td>
+                                                    <td>NIC : </br>
+                                                    <input type="text" name="nic" value="<?php echo $nic; ?>" readonly></td>
                                                 <tr>
                                                     <td><button class="btnStyle1 mx-2" type="submit" name="leaveStudent">Leave Student</button></td>
                                                 </tr>

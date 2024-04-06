@@ -126,45 +126,44 @@ if (isset($connection)) {
                                     <div class="p-3 m-1">
                                         <h4>Student Profile</h4>
                                         <form id="formYearSearch" method="post" action="#">
-                                            <table>
-                                                <tr>
-                                                    <td>Grade</td>
-                                                    <td>
-                                                        <?php
-                                                        // Database connection
-                                                        include 'DBConnection/DBConnection.php';
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="gradeSelect" class="form-label">Select Grade</label>
+                                                    <?php
+                                                    //get database connection
+                                                    include 'DBConnection/DBConnection.php';
 
-                                                        if (!$connection) {
-                                                            echo "Connection failed";
+                                                    // Check connection
+                                                    if (!$connection) {
+                                                        echo "Connection failed";
+                                                    }
+
+                                                    //SQL query select all grades
+                                                    $sql = "SELECT * FROM grade";
+                                                    $result = mysqli_query($connection, $sql);
+
+                                                    if ($result) {
+                                                        echo '<select id="gradeSelect" class="form-select" name="gradeSelect">';
+                                                        //display grades in dropdown
+                                                        while ($row = mysqli_fetch_assoc($result)) {
+                                                            echo '<option value="' . $row['Grade'] . '">' . $row['Grade'] . '</option>';
                                                         }
+                                                        echo '</select>';
+                                                        mysqli_free_result($result);
+                                                    } else {
+                                                        echo "0 results";
+                                                    }
 
-                                                        //query to retrieve grade options
-                                                        $sql = "SELECT * FROM grade";
-                                                        $result = mysqli_query($connection, $sql);
-
-                                                        if ($result) {
-                                                            echo '<select id="gradeSelect" class="grade-select-dropdown" name="gradeSelect">';
-                                                            
-                                                            //display grade options
-                                                            while ($row = mysqli_fetch_assoc($result)) {
-                                                                echo '<option value="' . $row['Grade'] . '">' . $row['Grade'] . '</option>';
-                                                            }
-                                                            
-                                                            echo '</select>';
-                                                            
-                                                            mysqli_free_result($result);
-                                                        } else {
-                                                            echo "Error: " . mysqli_error($connection);
-                                                        }
-
-                                                        //close the database connection
-                                                        mysqli_close($connection);
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btnStyle1 mx-2" type="submit" name="submit">Search</button>
-                                                </tr>
-                                            </table>
+                                                    //close the database connection
+                                                    mysqli_close($connection);
+                                                    ?>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="year" class="form-label">Select Year</label>
+                                                    <input type="number" class="form-control" id="year" name="year" min="2021" max="2030" value="<?php echo date("Y"); ?>">
+                                                </div>
+                                            </div>
+                                            <button class="btnStyle1 mx-2" type="submit" name="submit">Search</button>
                                         </form>
                                     </div>
                                 </div>
@@ -180,11 +179,10 @@ if (isset($connection)) {
                                 <div class="col">
                                     <div class="p-3 m-1">
                                         <form id="formStudentSearch" method="post" action="#">
-                                            <table>
-                                                <tr>
-                                                    <td>Student</td>
-                                                    <td>
-                                                        <?php
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="studentSelect" class="form-label">Select Student</label>
+                                                    <?php
                                                         //database connection
                                                         include 'DBConnection/DBConnection.php';
 
@@ -201,7 +199,7 @@ if (isset($connection)) {
                                                             $result = mysqli_query($connection, $sql);
 
                                                             if ($result) {
-                                                                echo '<select id="studentSelect" class="grade-select-dropdown" name="studentSelect">';
+                                                                echo '<select id="studentSelect" class="form-select" name="studentSelect">';
                                                                 
                                                                 //display student options
                                                                 while ($row = mysqli_fetch_assoc($result)) {
@@ -215,19 +213,16 @@ if (isset($connection)) {
                                                                 echo "Error: " . mysqli_error($connection);
                                                             }
                                                         } else {
-                                                            echo '<select id="studentSelect" class="grade-select-dropdown" name="studentId">';
+                                                            echo '<select id="studentSelect" class="form-select" name="studentId">';
                                                             echo '</select>';
                                                         }
 
                                                         //close the database connection
                                                         mysqli_close($connection);
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <button id="secondSearchBtn" class="btnStyle1 mx-2" type="submit" name="submit">Search</button>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                                    ?>
+                                                </div>
+                                            </div>
+                                            <button id="secondSearchBtn" class="btnStyle1 mx-2" type="submit" name="submit">Search</button>
                                         </form>
                                     </div>
                                 </div>
@@ -251,51 +246,51 @@ if (isset($connection)) {
                                     <div class="row d-flex align-items-start">
                                         <!-- display student details and leave form , leave student button -->
                                         <form id="formLeaveStudent" method="post" action="#">
-                                            <table width="100%">
+                                            <table class="puTable">
                                                 <tr>
                                                     <td>
-                                                    Student ID : </td>
-                                                    <td><input type="text" name="studentId" value="<?php echo $studentId; ?>" readonly></td>
+                                                    Student ID : </br>
+                                                    <input type="text" name="studentId" value="<?php echo $studentId; ?>" readonly></td>
                                                     <td>
-                                                    First Name : </td>
-                                                    <td><input type="text" name="firstName" value="<?php echo $first_name; ?>" readonly></td>
+                                                    First Name : </br>
+                                                    <input type="text" name="firstName" value="<?php echo $first_name; ?>" readonly></td>
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                    Last Name : </td>
-                                                    <td><input type="text" name="lastName" value="<?php echo $last_name; ?>" readonly></td>
+                                                    Last Name : </br>
+                                                    <input type="text" name="lastName" value="<?php echo $last_name; ?>" readonly></td>
                                                     <td>
-                                                    Sure Name : </td>
-                                                    <td><input type="text" name="sureName" value="<?php echo $sure_name; ?>" readonly></td>
+                                                    Sure Name : </br>
+                                                    <input type="text" name="sureName" value="<?php echo $sure_name; ?>" readonly></td>
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                    Admission Date : </td>
-                                                    <td><input type="text" name="admissionDate" value="<?php echo $admission_date; ?>" readonly></td>
+                                                    Admission Date : </br>
+                                                    <input type="text" name="admissionDate" value="<?php echo $admission_date; ?>" readonly></td>
                                                     <td>
-                                                    Address : </td>
-                                                    <td><input type="text" name="address" value="<?php echo $address; ?>" readonly></td>
+                                                    Address : </br>
+                                                    <input type="text" name="address" value="<?php echo $address; ?>" readonly></td>
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                    Email : </td>
-                                                    <td><input type="text" name="email" value="<?php echo $email; ?>" readonly></td>
+                                                    Email : </br>
+                                                    <input type="text" name="email" value="<?php echo $email; ?>" readonly></td>
                                                     <td>
-                                                    Date of Birth : </td>
-                                                    <td><input type="text" name="dob" value="<?php echo $dob; ?>" readonly></td>
+                                                    Date of Birth : </br>
+                                                    <input type="text" name="dob" value="<?php echo $dob; ?>" readonly></td>
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                    Guardian Name : </td>
-                                                    <td><input type="text" name="guardianName" value="<?php echo $guardian_name; ?>" readonly></td>
+                                                    Guardian Name : </br>
+                                                    <input type="text" name="guardianName" value="<?php echo $guardian_name; ?>" readonly></td>
                                                     <td>
-                                                    Contact No : </td>
-                                                    <td><input type="text" name="contactNo" value="<?php echo $contact_no; ?>" readonly></td>
+                                                    Contact No : </br>
+                                                    <input type="text" name="contactNo" value="<?php echo $contact_no; ?>" readonly></td>
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                    Emergency Contact No : </td>
-                                                    <td><input type="text" name="emergencyContactNo" value="<?php echo $emergency_contact_no; ?>" readonly></td>
+                                                    Emergency Contact No : </br>
+                                                    <input type="text" name="emergencyContactNo" value="<?php echo $emergency_contact_no; ?>" readonly></td>
                                                 </tr>
                                                 <tr>
                                                     <td><button class="btnStyle1 mx-2" type="submit" name="leaveStudent">Leave Student</button></td>

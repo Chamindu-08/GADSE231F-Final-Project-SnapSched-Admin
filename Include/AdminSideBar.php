@@ -107,10 +107,18 @@ mysqli_close($connection);
                         </ul>
                     </li>
                     <li class="sidebar-item">
-                        <a href="YearTimeTable.php" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">
-                            <img src="Images/table-calendar.png" style="width:15px;">
+                    <a href="#" class="sidebar-link collapsed" data-bs-target="#posts" data-bs-toggle="collapse"
+                            aria-expanded="false"><img src="Images/table-calendar.png" style="width:15px;">
                             Year Time Table
                         </a>
+                        <ul id="posts" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                            <li class="sidebar-item">
+                                <a href="YearTimeTable.php" class="sidebar-link">Auto Generate Time Table</a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="YearTimeTableManual.php" class="sidebar-link">Manual Generate Time Table</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="sidebar-item">
                         <a href="Absentism.php" class="sidebar-link" data-bs-target="#posts" aria-expanded="false">

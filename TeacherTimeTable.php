@@ -42,11 +42,10 @@ if (isset($_COOKIE['adminEmail'])) {
                                     <div class="p-3 m-1">
                                         <h4>Teacher Profile</h4>
                                         <form id="formTeacherSearch" method="post" action="#">
-                                            <table>
-                                                <tr>
-                                                    <td>Teacher</td>
-                                                    <td>
-                                                        <?php
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="teacherSelect" class="form-label">Select Teacher</label>
+                                                    <?php
                                                         //get database connection
                                                         include 'DBConnection/DBConnection.php';
 
@@ -60,7 +59,7 @@ if (isset($_COOKIE['adminEmail'])) {
                                                         $result = mysqli_query($connection, $sql);
 
                                                         if ($result) {
-                                                            echo '<select id="teacherSelect" class="grade-select-dropdown" name="teacherSelect">';
+                                                            echo '<select id="teacherSelect" class="form-select" name="teacherSelect">';
                                                             //display teachers in dropdown
                                                             while ($row = mysqli_fetch_assoc($result)) {
                                                                 echo '<option value="' . $row['TeacherId'] . '">' . $row['FirstName'] . ' ' . $row['LastName'] . '</option>';
@@ -70,12 +69,12 @@ if (isset($_COOKIE['adminEmail'])) {
                                                         } else {
                                                             echo "Error: " . mysqli_error($connection);
                                                         }
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btnStyle1 mx-2" type="submit" name="submit">Search</button>
-                                                </tr>
-                                            </table>
+                                                    ?>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <button type="submit" class="btnStyle1">Search</button>
+                                                </div>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>

@@ -45,9 +45,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $validationMessages .= "Please fill all fields. ";
     }
 
-    //validate email
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $validationMessages .= "Invalid email format. ";
+    // Validate email last @gmail.com
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || substr($email, -10) !== "@gmail.com") {
+        $errorMessage = "Invalid email format or not a Gmail address.";
+    }
+
+    //check if email exists in the database
+    $check = "SELECT * FROM teacher WHERE TeacherEmail='$email'";
+    $result = mysqli_query($connection, $check);
+
+    if (mysqli_num_rows($result) > 0) {
+        $validationMessages .= "Email already exists. ";
     }
 
     //validate contact number
@@ -55,9 +63,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $validationMessages .= "Invalid contact number. ";
     }
 
-    //validate if nic in 12 characters only numbers
-    if (strlen($nic) == 12 && !preg_match("/^[0-9]+$/", $nic)) {
-        $validationMessages .= "Invalid NIC. ";
+    //validate nic 12 or 10 characters
+    if ((strlen($nic) != 12 && strlen($nic) != 10) || (strlen($nic) == 12 && !preg_match("/^[0-9]+$/", $nic)) || (strlen($nic) == 10 && !preg_match("/^[0-9]{9}[Vv]$/", $nic))) {
+        $errorMessage = "Invalid NIC.";
     }
 
     //validate if nic in 10 characters only 9 numbers and last character is V or v
@@ -90,14 +98,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $validationMessages .= "NIC already exists. ";
     }
 
-    //check if email exists in the database
-    $check = "SELECT * FROM teacher WHERE TeacherEmail='$email'";
-    $result = mysqli_query($connection, $check);
-
-    if (mysqli_num_rows($result) > 0) {
-        $validationMessages .= "Email already exists. ";
-    }
-
     //if there are validation errors, display them
     if (!empty($validationMessages)) {
         $validationMessages = '<div class="alert alert-danger">' . $validationMessages . '</div>';
@@ -113,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //check if the query executed successfully
         if ($resultTeacher && $resultTeacherTeach) {
-            $validationMessages = '<div class="alert alert-success">Teacher registered successfully</div>';
+            echo '<script>alert("Teacher registered successfully.");</script>';
 
             //send email to the teacher
          /*   $to = $email;
@@ -128,6 +128,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //clear form data
         $teacher_id = $first_name = $last_name = $sur_name = $address = $contact_no = $email = $nic = $assume_date = $password = $confirmPassword = $subject = "";
+
+        //close the database connection
+        mysqli_close($connection);
+
+        //redirect to the same page
+        header("Location: TeacherRegister.php");
     }
 }
 

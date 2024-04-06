@@ -122,7 +122,7 @@ if (isset($_POST['date'], $_POST['announcement_id'])) {
                                                 }
 
                                                 //query to select announcement
-                                                $query = "SELECT * FROM announcement";
+                                                $query = "SELECT * FROM announcement WHERE AnnouncementDate >= CURDATE()";
                                                 //execute the query
                                                 $result = mysqli_query($connection, $query);
                                                 //check if the query is executed

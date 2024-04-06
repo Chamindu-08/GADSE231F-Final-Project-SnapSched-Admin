@@ -44,37 +44,56 @@ if (isset($_COOKIE['adminEmail'])) {
                 </div>
                 <div class="card-body">
                     <form method="post" action="#">
-                        <table>
-                            <tr>
-                                <td>
-                                    <label for="grade">Select Grade:</label>
-                                </td>
-                                <td>
-                                    <select id="gradeSelect" class="grade-select-dropdown" name="gradeSelect">
-                                        <option value="6">Grade 6</option>
-                                        <option value="7">Grade 7</option>
-                                        <option value="8">Grade 8</option>
-                                        <option value="9">Grade 9</option>
-                                        <option value="10">Grade 10</option>
-                                        <option value="11">Grade 11</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <button class="btnStyle1 mx-2" type="submit" name="submit">Search</button>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="gradeSelect" class="form-label">Select Grade</label>
+                                <?php
+                                //database connection
+                                include 'DBConnection/DBConnection.php';
+
+                                //check connection
+                                if (!$connection) {
+                                    echo "Connection failed";
+                                }
+
+                                //get grades from the database
+                                $sql = "SELECT * FROM grade";
+                                $result = mysqli_query($connection, $sql);
+
+                                if ($result) {
+                                    //display grades in a dropdown list
+                                    echo '<select id="gradeSelect" class="form-select" name="gradeSelect">';
+                                    while ($row = mysqli_fetch_assoc($result)) {
+                                        echo '<option value="' . $row['Grade'] . '">' . $row['Grade'] . '</option>';
+                                    }
+                                    echo '</select>';
+                                    mysqli_free_result($result);
+                                } else {
+                                    echo "Error: " . mysqli_error($connection);
+                                }
+
+                                //close the database connection
+                                mysqli_close($connection);
+                                ?>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btnStyle1 mt-4" type="submit" name="submit">Search</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
 
             <!-- After search, display the form to select the teacher for each subject -->
             <?php
-            // Check if the form is submitted
+            //check if the form is submitted
             if (isset($_POST['submit'])) {
                 $grade = $_POST['gradeSelect'];
-                $subjects = []; // Initialize $subjects array
 
+                //subjects for each grade
+                $subjects = [];
+
+                //get subjects for each grade
                 if ($grade >= 6 && $grade <= 9) {
                     $subjects = [
                         "Buddhism" => 2,
@@ -84,10 +103,10 @@ if (isset($_COOKIE['adminEmail'])) {
                         "Science" => 5,
                         "History" => 2,
                         "Geography" => 2,
-                        "Civic Education" => 2,
+                        "CivicEducation" => 2,
                         "Aestetic" => 3,
                         "Tamil" => 2,
-                        "Health & Physical Education" => 2,
+                        "HealthAndPhysicalEducation" => 2,
                         "PTS" => 3,
                         "ICT" => 1,
                         "Library" => 1
@@ -100,14 +119,14 @@ if (isset($_COOKIE['adminEmail'])) {
                         "Mathematics" => 7,
                         "Science" => 6,
                         "History" => 3,
-                        "Optianal 01" => 3,
-                        "Optianal 02" => 3,
-                        "Optianal 03" => 3,
+                        "Optianal01" => 3,
+                        "Optianal02" => 3,
+                        "Optianal03" => 3,
                         "Library" => 1
                     ];
                 }
 
-                // Display the form to select teacher for each subject
+                //display the form to select teacher for each subject
                 echo '<div class="row">';
                 echo '<div class="card flex-fill border-0">';
                 echo '<div class="card-body p-0 d-flex flex-fill">';
@@ -117,6 +136,8 @@ if (isset($_COOKIE['adminEmail'])) {
                 echo '<h4>Teacher Selection</h4>';
                 echo '<form id="formTeacherSelect" method="post" action="#">';
                 echo '<table>';
+
+                //display subjects and dropdown list to select teacher
                 foreach ($subjects as $subject => $periods) {
                     echo "<tr>";
                     echo "<td>$subject</td>";
@@ -131,7 +152,7 @@ if (isset($_COOKIE['adminEmail'])) {
                         echo "Connection failed";
                     }
 
-                    // Get teachers from the database
+                    //get teachers from the database
                     //join teacher and subject and optional subject table
                     $sql = "SELECT teacher.TeacherId, CONCAT(teacher.FirstName, ' ', teacher.LastName) AS TeacherName
                             FROM teachSubject
@@ -145,7 +166,7 @@ if (isset($_COOKIE['adminEmail'])) {
                         echo "Error: " . mysqli_error($connection);
                     }
 
-
+                    //display teachers in a dropdown list
                     while ($row = mysqli_fetch_assoc($result)) {
                         echo "<option value='" . $row['TeacherId'] . "'>" . $row['TeacherName'] . "</option>";
                     }

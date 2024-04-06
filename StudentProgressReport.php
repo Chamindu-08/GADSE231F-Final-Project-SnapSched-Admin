@@ -41,46 +41,40 @@ if (isset($_COOKIE['adminEmail'])) {
                                     <div class="p-3 m-1">
                                         <h4>School Progress Report</h4>
                                         <form id="formYearSearch" method="post" action="#">
-                                            <table>
-                                                <tr>
-                                                    <td>Grade</td>
-                                                    <td>
-                                                        <?php
-                                                        // Database connection
-                                                        include 'DBConnection/DBConnection.php';
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="gradeSelect" class="form-label">Select Grade</label>
+                                                    <?php
+                                                    //get database connection
+                                                    include 'DBConnection/DBConnection.php';
 
-                                                        if (!$connection) {
-                                                            echo "Connection failed";
+                                                    // Check connection
+                                                    if (!$connection) {
+                                                        echo "Connection failed";
+                                                    }
+
+                                                    //SQL query select all grades
+                                                    $sql = "SELECT * FROM grade";
+                                                    $result = mysqli_query($connection, $sql);
+
+                                                    if ($result) {
+                                                        echo '<select id="gradeSelect" class="form-select" name="gradeSelect">';
+                                                        //display grades in dropdown
+                                                        while ($row = mysqli_fetch_assoc($result)) {
+                                                            echo '<option value="' . $row['Grade'] . '">' . $row['Grade'] . '</option>';
                                                         }
+                                                        echo '</select>';
+                                                        mysqli_free_result($result);
+                                                    } else {
+                                                        echo "Error: " . mysqli_error($connection);
+                                                    }
 
-                                                        //query to retrieve grade options
-                                                        $sql = "SELECT * FROM grade";
-                                                        $result = mysqli_query($connection, $sql);
-
-                                                        if ($result) {
-                                                            echo '<select id="gradeSelect" class="grade-select-dropdown" name="gradeSelect">';
-                                                            
-                                                            //display grade options
-                                                            while ($row = mysqli_fetch_assoc($result)) {
-                                                                echo '<option value="' . $row['Grade'] . '">' . $row['Grade'] . '</option>';
-                                                            }
-                                                            
-                                                            echo '</select>';
-                                                            
-                                                            mysqli_free_result($result);
-                                                        } else {
-                                                            echo "Error: " . mysqli_error($connection);
-                                                        }
-
-                                                        //close the database connection
-                                                        mysqli_close($connection);
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <button id="firstSearchBtn" class="btnStyle1 mx-2" type="submit" name="submit">Search</button>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                                    //close the database connection
+                                                    mysqli_close($connection);
+                                                    ?>
+                                                </div>
+                                            </div>
+                                            <button id="firstSearchBtn" class="btnStyle1 mx-2" type="submit" name="submit">Search</button>
                                         </form>
                                     </div>
                                 </div>
@@ -96,11 +90,10 @@ if (isset($_COOKIE['adminEmail'])) {
                                 <div class="col">
                                     <div class="p-3 m-1">
                                         <form id="formStudentSearch" method="post" action="#">
-                                            <table>
-                                                <tr>
-                                                    <td>Student</td>
-                                                    <td>
-                                                        <?php
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="studentId" class="form-label">Select Student</label>
+                                                    <?php
                                                         //database connection
                                                         include 'DBConnection/DBConnection.php';
 
@@ -116,7 +109,7 @@ if (isset($_COOKIE['adminEmail'])) {
                                                             $result = mysqli_query($connection, $sql);
 
                                                             if ($result) {
-                                                                echo '<select id="studentSelect" class="grade-select-dropdown" name="studentId">';
+                                                                echo '<select id="studentSelect" class="form-select" name="studentId">';
                                                                 
                                                                 //display student options
                                                                 while ($row = mysqli_fetch_assoc($result)) {
@@ -130,17 +123,17 @@ if (isset($_COOKIE['adminEmail'])) {
                                                                 echo "Error: " . mysqli_error($connection);
                                                             }
                                                         } else {
-                                                            echo '<select id="studentSelect" class="grade-select-dropdown" name="studentId">';
+                                                            echo '<select id="studentSelect" class="form-select" name="studentId">';
                                                             echo '</select>';
                                                         }
 
                                                         //close the database connection
                                                         mysqli_close($connection);
-                                                        ?>
-                                                    </td>
-                                                    <td>Year</td>
-                                                    <td>
-                                                        <?php
+                                                    ?>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="yearSelect" class="form-label">Select Year</label>
+                                                    <?php
                                                         //database connection
                                                         include 'DBConnection/DBConnection.php';
 
@@ -153,7 +146,7 @@ if (isset($_COOKIE['adminEmail'])) {
                                                         $result = mysqli_query($connection, $sql);
 
                                                         if ($result) {
-                                                            echo '<select id="yearSelect" class="grade-select-dropdown" name="yearSelect">';
+                                                            echo '<select id="yearSelect" class="form-select" name="yearSelect">';
                                                             
                                                             //display year options
                                                             while ($row = mysqli_fetch_assoc($result)) {
@@ -169,13 +162,10 @@ if (isset($_COOKIE['adminEmail'])) {
 
                                                         //close the database connection
                                                         mysqli_close($connection);
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <button id="secondSearchBtn" class="btnStyle1 mx-2" type="submit">Search</button>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                                    ?>
+                                                </div>
+                                            </div>
+                                            <button id="secondSearchBtn" class="btnStyle1 mx-2" type="submit">Search</button>
                                         </form>
                                     </div>
                                 </div>

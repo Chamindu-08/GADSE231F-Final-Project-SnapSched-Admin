@@ -136,11 +136,19 @@ if(isset($_COOKIE['adminEmail'])){
                                 <h4 class="card-title" style="text-align: center;">Time Table</h4>
                                 <img class="card-img-top" src="Images/TimeTable.JPG" alt="Card image" style="width:100%">
                                 <div class="card-body">
-                                    <li class="sidebar-item1">
-                                        <a href="YearTimeTable.php" class="sidebar-link1" data-bs-target="#posts" aria-expanded="false">
-                                            Generate Time Table
-                                        </a>
-                                    </li>
+                                <li class="sidebar-item">
+                                <a href="#" class="sidebar-link1 collapsed" style="text" data-bs-target="#timeTableOptions" data-bs-toggle="collapse" aria-expanded="false">
+                                        Year Time Table
+                                    </a>
+                                    <ul id="timeTableOptions" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                        <li class="sidebar-item">
+                                            <a href="YearTimeTable.php" class="sidebar-link1">Auto Generate Time Table</a>
+                                        </li>
+                                        <li class="sidebar-item">
+                                            <a href="YearTimeTableManual.php" class="sidebar-link1">Manual Generate Time Table</a>
+                                        </li>
+                                    </ul>
+                                </li>
                                 </div>
                             </div>
                         </div>
