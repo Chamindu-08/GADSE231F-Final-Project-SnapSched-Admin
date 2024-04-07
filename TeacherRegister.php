@@ -106,14 +106,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sqlTeacher = "INSERT INTO teacher (TeacherId, FirstName, LastName, SurName, TeacherAddress, TeacherContactNo, NIC, TeacherEmail, TeacherPassword, AssumeDate, TeacherStatus) VALUES ('$teacher_id', '$first_name', '$last_name', '$sur_name', '$address', '$contact_no', '$nic', '$email', '$password', '$assume_date', 'Available')";
 
         //teacher teach subjects
-        $sqlTeacherTeach = "INSERT INTO teach (TeacherId, SubjectId) VALUES ('$teacher_id', '$subject')";
+        $sqlTeacherTeach = "INSERT INTO teachSubject (TeacherId, SubjectId) VALUES ('$teacher_id', '$subject')";
         //execute the query
         $resultTeacher = mysqli_query($connection, $sqlTeacher);
         $resultTeacherTeach = mysqli_query($connection, $sqlTeacherTeach);
 
         //check if the query executed successfully
         if ($resultTeacher && $resultTeacherTeach) {
-            echo '<script>alert("Teacher registered successfully.");</script>';
+            echo '<div class="alert alert-success">Teacher registered successfully.</div>';
 
             //send email to the teacher
          /*   $to = $email;

@@ -68,6 +68,24 @@ if (isset($_POST['studentSelect'])) {
 if (isset($_POST['leaveStudent'])) {
     $studentId = $_POST['studentId'];
 
+    //check if already left the student
+    $sqlCheck = "SELECT * FROM oldStudent WHERE StudentId = '$studentId'";
+    $resultCheck = mysqli_query($connection, $sqlCheck);
+
+    if ($resultCheck->num_rows > 0) {
+        echo "<script>alert('Student already left.');</script>";
+        echo "<script>window.location.href = 'LeaveStudent.php';</script>";
+    }
+
+    //check if already left the student
+    $sqlCheck = "SELECT * FROM student WHERE StudentId = '$studentId' AND StudentStatus = 'no'";
+    $resultCheck = mysqli_query($connection, $sqlCheck);
+
+    if ($resultCheck->num_rows > 0) {
+        echo "<script>alert('Student already left.');</script>";
+        echo "<script>window.location.href = 'LeaveStudent.php';</script>";
+    }
+
     //update student status to no
     $sql = "UPDATE student SET StudentStatus = 'no' Grade = NULL WHERE StudentId = '$studentId'";
 

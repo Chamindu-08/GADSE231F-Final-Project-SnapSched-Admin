@@ -95,7 +95,7 @@ if (isset($_POST['generate'])) {
                     }
 
                     //insert records into the database
-                    mysqli_stmt_bind_param($stmt, "iisssis", $teacherId, $grade, $teacherId, $subjectId, $year, $period, $weekday);
+                    mysqli_stmt_bind_param($stmt, "iisssis", $teachingId, $grade, $teacherId, $subjectId, $year, $period, $weekday);
                     mysqli_stmt_execute($stmt);
 
                     //check if the records are inserted

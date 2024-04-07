@@ -123,6 +123,9 @@ if (isset($_POST['submit'])) {
                     <!-- Display absent teacher's information -->
                     <div class="card-body table-responsive">
                         <?php
+                        //get database connection
+                        include 'DBConnection/DBConnection.php';
+
                         //check connection
                         if (!$connection) {
                             echo "<script>alert('Database connection failed.');</script>";
@@ -131,14 +134,14 @@ if (isset($_POST['submit'])) {
                         //retrieve absent teacher's information
                         $absentDate = date('Y-m-d');
                         $weekdayName  = date('l', strtotime($absentDate));
-
+                        
                         echo "<h5>Absent Teacher Information</h5>";
                         echo "<p>Teacher ID: $teacherId</p>";
                         echo "<p>Teacher Name: $teacherName</p>";
                         echo "<p>Date: $weekdayName </p>";
 
                         //fetch periods the teacher is absent for on the specified date
-                        $query = "SELECT DISTINCT Period, TeachingId FROM teaching WHERE TeacherId = '$teacherId' AND DayOfWeek = '$weekdayName'";
+                        $query = "SELECT TeachingId, Period FROM teaching WHERE TeacherId = '$teacherId' AND DayOfWeek = '$weekdayName'";
                         $result = mysqli_query($connection, $query);
 
                         if (mysqli_num_rows($result) > 0) {
@@ -161,11 +164,11 @@ if (isset($_POST['submit'])) {
                                                 SELECT TeacherId 
                                                 FROM teaching 
                                                 WHERE Period = '$period' AND DayOfWeek = '$weekdayName'
-                                            ) AND TeacherStatus = 'Active'";
+                                            ) AND TeacherStatus = 'Avilable'";
 
                                 //execute the query
                                 $reliefResult = mysqli_query($connection, $query);
-                                if ($reliefResult) {
+                                if (mysqli_num_rows($reliefResult) > 0) {
                                     //display relief teachers
                                     while ($reliefRow = mysqli_fetch_assoc($reliefResult)) {
                                         echo "<option value='" . $reliefRow['TeacherId'] . "'>" . $reliefRow['TeacherName'] . "</option>";
@@ -187,6 +190,9 @@ if (isset($_POST['submit'])) {
                         } else {
                             echo "<p>No periods found for the absent teacher on this date.</p>";
                         }
+
+                        //close the connection
+                        mysqli_close($connection);
                         ?>
                     </div>
                 </div>

@@ -70,6 +70,21 @@ if (isset($_POST['leaveStudent'])) {
     // Get teacher ID
     $teacherId = $_POST['teacherId'];
 
+    //check if already left the teacher
+    $sqlCheckTeacher = "SELECT TeacherStatus FROM teacher WHERE TeacherId='$teacherId'";
+    $resultCheckTeacher = mysqli_query($connection, $sqlCheckTeacher);
+
+    if ($resultCheckTeacher) {
+        $row = mysqli_fetch_assoc($resultCheckTeacher);
+        if ($row['TeacherStatus'] == 'NotAvilable') {
+            echo "<script>alert('Teacher already left.');</script>";
+            echo "<script>window.location.href='LeaveTeacher.php';</script>";
+        }
+    } else {
+        echo "<script>alert('Error checking teacher status.');</script>";
+        exit();
+    }
+
     // Get teacher details
     $sql = "SELECT * FROM teacher WHERE TeacherId='$teacherId'";
     $result = mysqli_query($connection, $sql);
